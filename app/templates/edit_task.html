@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="form-container">
+
+    <h1>Editar Tarefa</h1>
+
+    <form method="POST">
+
+        <input
+            type="text"
+            name="title"
+            value="{{ task.title }}"
+            required
+        >
+
+        <textarea
+            name="description"
+            rows="5"
+        >{{ task.description }}</textarea>
+
+        <select name="priority" required>
+
+            <option
+                value="baixa"
+                {% if task.priority == "baixa" %}selected{% endif %}
+    >
+                Prioridade Baixa
+            </option>
+
+            <option
+                 value="media"
+                {% if task.priority == "media" %}selected{% endif %}
+    >
+                Prioridade Média
+            </option>
+
+            <option
+                value="alta"
+                 {% if task.priority == "alta" %}selected{% endif %}
+    >
+                Prioridade Alta
+            </option>
+
+        </select>
+
+        <select name="status" required>
+
+            <option
+                value="pendente"
+                {% if task.status == "pendente" %}selected{% endif %}
+            >
+                ⏳ Pendente
+            </option>
+
+            <option
+                value="concluída"
+                {% if task.status == "concluída" %}selected{% endif %}
+            >
+                ✓ Concluída
+            </option>
+
+        </select>
+
+        <input
+            type="date"
+            name="due_date"
+            value="{{ task.due_date.strftime('%Y-%m-%d') if task.due_date else '' }}"
+        >
+
+        <button type="submit">
+            Salvar alterações
+        </button>
+
+    </form>
+
+    <br>
+
+    <a
+        href="{{ url_for('main.dashboard') }}"
+        class="btn secondary"
+    >
+        Voltar
+    </a>
+
+</div>
+
+{% endblock %}

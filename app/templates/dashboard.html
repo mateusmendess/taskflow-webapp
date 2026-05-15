@@ -1,0 +1,455 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="hero">
+    <h1>Dashboard TaskFlow</h1>
+    <p>Gerencie suas tarefas.</p>
+
+    <div class="buttons">
+        <a href="{{ url_for('main.logout') }}" class="btn secondary">
+            Logout
+        </a>
+    </div>
+</section>
+
+<div class="stats-container">
+
+    <div class="stat-card">
+        <h3>{{ total_tasks }}</h3>
+        <p>Total</p>
+    </div>
+
+    <div class="stat-card">
+        <h3>{{ pending_tasks }}</h3>
+        <p>Pendentes</p>
+    </div>
+
+    <div class="stat-card">
+        <h3>{{ completed_tasks }}</h3>
+        <p>Concluídas</p>
+    </div>
+
+    <div class="stat-card">
+        <h3>{{ overdue_tasks }}</h3>
+        <p>Atrasadas</p>
+    </div>
+
+</div>
+
+<br><br>
+
+<div class="form-container">
+
+    <h2>Nova Tarefa</h2>
+
+    <form method="POST">
+
+        <input
+            type="text"
+            name="title"
+            placeholder="Título da tarefa"
+            required
+        >
+
+        <textarea
+            name="description"
+            placeholder="Descrição"
+            rows="4"
+        ></textarea>
+
+        <select name="priority" required>
+
+            <option value="">
+                Selecione a prioridade
+            </option>
+
+            <option value="baixa">
+                Baixa
+            </option>
+
+            <option value="media">
+                Média
+            </option>
+
+            <option value="alta">
+                Alta
+            </option>
+
+        </select>
+
+        <input
+            type="date"
+            name="due_date"
+        >
+
+        <button type="submit">
+            Criar tarefa
+        </button>
+
+    </form>
+
+</div>
+
+<br><br>
+
+<div class="form-container tasks-container">
+
+    <h2>Minhas Tarefas</h2>
+
+    <br>
+
+    <div class="filters-box">
+
+        <div class="filter-group">
+
+            <h3>📋 Status</h3>
+
+            <div class="filter-buttons">
+
+                <button
+                    class="btn secondary filter-btn active-filter"
+                    data-filter="all"
+                >
+                    ✓ Todas
+                </button>
+
+                <button
+                    class="btn secondary filter-btn"
+                    data-filter="pending"
+                >
+                    ⏱️ Pendentes
+                </button>
+
+                <button
+                    class="btn secondary filter-btn"
+                    data-filter="completed"
+                >
+                    ✅ Concluídas
+                </button>
+
+            </div>
+
+        </div>
+
+        <hr class="filter-divider">
+
+        <div class="filter-group">
+
+            <h3>🚩 Prioridade</h3>
+
+            <div class="priority-filters">
+
+                <button
+                    class="btn secondary priority-filter-btn active-priority"
+                    data-priority="all"
+                >
+                    ✓ Todas
+                </button>
+
+                <button
+                    class="btn secondary priority-filter-btn"
+                    data-priority="alta"
+                >
+                    🔺 Alta
+                </button>
+
+                <button
+                    class="btn secondary priority-filter-btn"
+                    data-priority="media"
+                >
+                    ⚡ Média
+                </button>
+
+                <button
+                    class="btn secondary priority-filter-btn"
+                    data-priority="baixa"
+                >
+                    🔻 Baixa
+                </button>
+
+            </div>
+
+        </div>
+
+        <hr class="filter-divider">
+
+        <div class="filter-group">
+
+            <h3>📅 Vencimento</h3>
+
+            <div class="deadline-filters">
+
+                <button
+                    class="btn secondary deadline-filter-btn active-deadline"
+                    data-deadline="all"
+                >
+                    ✓ Todas
+                </button>
+
+                <button
+                    class="btn secondary deadline-filter-btn"
+                    data-deadline="overdue"
+                >
+                    🕘 Atrasadas
+                </button>
+
+                <button
+                    class="btn secondary deadline-filter-btn"
+                    data-deadline="today"
+                >
+                    📅 Hoje
+                </button>
+
+                <button
+                    class="btn secondary deadline-filter-btn"
+                    data-deadline="future"
+                >
+                    ➡️ Futuras
+                </button>
+
+                <button
+                    class="btn secondary deadline-filter-btn"
+                    data-deadline="none"
+                >
+                    📂 Sem data
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <input
+        type="text"
+        id="search-input"
+        class="search-input"
+        placeholder="Pesquisar tarefa..."
+    >
+
+    <div class="sort-container">
+
+        <select
+            id="sort-select"
+            class="sort-select"
+        >
+
+            <option value="none">
+                Ordenar por...
+            </option>
+
+            <option value="important">
+                Mais importantes
+            </option>
+
+            <option value="due_date">
+                Vencimento mais próximo
+            </option>
+
+            <option value="priority">
+                Prioridade alta primeiro
+            </option>
+
+            <option value="newest">
+                Mais recentes
+            </option>
+
+            <option value="oldest">
+                Mais antigas
+            </option>
+
+        </select>
+
+    </div>
+
+    {% if tasks %}
+
+        <p
+            id="empty-filter-message"
+            style="
+                display: none;
+                text-align: center;
+                margin-top: 20px;
+                font-weight: bold;
+                color: #6b7280;
+            "
+        >
+            Nenhuma tarefa disponível.
+        </p>
+
+        <div class="tasks-list-box">
+
+            <div class="tasks-grid">
+
+                {% for task in tasks %}
+
+                    <div
+                        class="
+                            task-card
+
+                            {% if task.status == 'concluída' %}
+                                completed-card
+
+                            {% elif task.status != 'pendente' %}
+                                completed-card
+
+                            {% elif task.due_date and task.due_date < today %}
+                                overdue-card
+
+                            {% elif task.due_date and task.due_date|string == today|string %}
+                                warning-card
+
+                            {% endif %}
+                        "
+
+                        data-id="{{ task.id }}"
+                        data-status="{{ task.status }}"
+                        data-priority="{{ task.priority }}"
+                        data-title="{{ task.title | lower }}"
+                        data-description="{{ task.description | lower }}"
+                        data-due-date="{{ task.due_date }}"
+                        data-created-at="{{ task.created_at }}"
+                        data-today="{{ today }}"
+
+                        data-overdue="
+                            {% if task.due_date and task.due_date < today and task.status != 'concluída' %}
+                                true
+                            {% else %}
+                                false
+                            {% endif %}
+                        "
+                    >
+
+                        <h3>{{ task.title }}</h3>
+
+                        <p>{{ task.description }}</p>
+
+                        {% if task.status == "concluída" %}
+
+                            <span class="status done">
+                                ✓ Concluída
+                            </span>
+
+                        {% else %}
+
+                            <span class="status pending">
+                                ⏳ Pendente
+                            </span>
+
+                        {% endif %}
+
+                        {% if task.priority == "alta" %}
+
+                            <span class="priority high">
+                                🔥 Prioridade Alta
+                            </span>
+
+                        {% elif task.priority == "media" %}
+
+                            <span class="priority medium">
+                                ⚡ Prioridade Média
+                            </span>
+
+                        {% else %}
+
+                            <span class="priority low">
+                                🌱 Prioridade Baixa
+                            </span>
+
+                        {% endif %}
+
+                        <br><br>
+
+                        {% if task.due_date %}
+
+                            {% if task.status == "concluída" %}
+
+                                <p class="due-date">
+                                    ✅ Vencimento:
+                                    {{ task.due_date.strftime("%d/%m/%Y") }}
+                                </p>
+
+                            {% elif task.due_date < today %}
+
+                                <p class="due-date">
+                                    ⚠️ Vencimento:
+                                    {{ task.due_date.strftime("%d/%m/%Y") }}
+                                </p>
+
+                            {% elif task.due_date|string == today|string %}
+
+                                <p class="due-date">
+                                    ⏰ Vencimento:
+                                    {{ task.due_date.strftime("%d/%m/%Y") }}
+                                </p>
+
+                            {% else %}
+
+                                <p class="due-date">
+                                    🗓️ Vencimento:
+                                    {{ task.due_date.strftime("%d/%m/%Y") }}
+                                </p>
+
+                            {% endif %}
+
+                        {% endif %}
+
+                        <div class="task-actions">
+
+                            {% if task.status != "concluída" %}
+
+                                <button
+                                    type="button"
+                                    class="btn primary complete-btn"
+                                    data-url="{{ url_for('main.complete_task', task_id=task.id) }}"
+                                >
+                                    Concluir
+                                </button>
+
+                            {% endif %}
+
+                            <a
+                                href="{{ url_for('main.edit_task', task_id=task.id) }}"
+                                class="btn secondary"
+                            >
+                                Editar
+                            </a>
+
+                            <a
+                                href="{{ url_for('main.delete_task', task_id=task.id) }}"
+                                class="btn secondary"
+                            >
+                                Excluir
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+    {% else %}
+
+        <p
+            style="
+                text-align: center;
+                margin-top: 20px;
+                font-weight: bold;
+                color: #6b7280;
+            "
+        >
+            Nenhuma tarefa cadastrada.
+        </p>
+
+    {% endif %}
+
+</div>
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+{% endblock %}
