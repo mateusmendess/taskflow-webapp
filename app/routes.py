@@ -305,6 +305,39 @@ def quadro():
     tasks = Task.query.filter_by(user_id=current_user.id).all()
     return render_template("quadro.html", tasks=tasks)
 
+@main.route("/perfil", methods=["GET", "POST"])
+@login_required
+def perfil():
+    if request.method == "POST":
+        action = request.form.get("action")
+
+        if action == "update_name":
+            name = request.form.get("name")
+            if name:
+                current_user.name = name
+                db.session.commit()
+                flash("Nome atualizado com sucesso!", "success")
+
+        elif action == "update_password":
+            current_password = request.form.get("current_password")
+            new_password = request.form.get("new_password")
+            confirm_password = request.form.get("confirm_password")
+
+            if not bcrypt.check_password_hash(current_user.password, current_password):
+                flash("Senha atual incorreta.", "error")
+            elif new_password != confirm_password:
+                flash("As senhas não coincidem.", "error")
+            elif len(new_password) < 6:
+                flash("A nova senha deve ter pelo menos 6 caracteres.", "error")
+            else:
+                current_user.password = bcrypt.generate_password_hash(new_password).decode("utf-8")
+                db.session.commit()
+                flash("Senha atualizada com sucesso!", "success")
+
+        return redirect(url_for("main.perfil"))
+
+    return render_template("perfil.html")
+
 @main.route("/logout")
 @login_required
 def logout():

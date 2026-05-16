@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="db-page" style="max-width: 640px;">
+
+    <div class="db-hero">
+        <h1>Meu Perfil</h1>
+        <p>Gerencie suas informações pessoais.</p>
+    </div>
+
+    <!-- Card de info -->
+    <div class="db-card" style="margin-bottom: 20px;">
+
+        <div class="db-card-title">
+            <span class="db-card-icon">👤</span>
+            Informações da conta
+        </div>
+
+        <div style="
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 16px;
+            background: var(--tf-surface-2);
+            border: 1.5px solid var(--tf-border);
+            border-radius: 12px;
+            margin-bottom: 20px;
+        ">
+            <div style="
+                width: 56px;
+                height: 56px;
+                border-radius: 50%;
+                background: var(--tf-primary-bg);
+                border: 2px solid var(--tf-primary);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.4rem;
+                font-weight: 800;
+                color: var(--tf-primary);
+                flex-shrink: 0;
+            ">
+                {{ current_user.name[0].upper() }}
+            </div>
+            <div>
+                <div style="font-size: 1rem; font-weight: 700; color: var(--tf-text);">
+                    {{ current_user.name }}
+                </div>
+                <div style="font-size: 0.85rem; color: var(--tf-muted);">
+                    {{ current_user.email }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Editar nome -->
+        <form method="POST">
+            <input type="hidden" name="action" value="update_name">
+
+            <label class="tf-label">Nome</label>
+            <input type="text" name="name" class="tf-input"
+                value="{{ current_user.name }}" required>
+
+            <button type="submit" class="tf-btn-primary">
+                Salvar nome
+            </button>
+        </form>
+
+    </div>
+
+    <!-- Card de senha -->
+    <div class="db-card">
+
+        <div class="db-card-title">
+            <span class="db-card-icon">🔒</span>
+            Alterar senha
+        </div>
+
+        <form method="POST">
+            <input type="hidden" name="action" value="update_password">
+
+            <label class="tf-label">Senha atual</label>
+            <input type="password" name="current_password" class="tf-input"
+                placeholder="••••••••" required>
+
+            <label class="tf-label">Nova senha</label>
+            <input type="password" name="new_password" class="tf-input"
+                placeholder="••••••••" required>
+
+            <label class="tf-label">Confirmar nova senha</label>
+            <input type="password" name="confirm_password" class="tf-input"
+                placeholder="••••••••" required>
+
+            <button type="submit" class="tf-btn-primary">
+                Atualizar senha
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}
