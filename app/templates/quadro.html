@@ -11,32 +11,9 @@
 
     <div class="db-card">
 
-        <div class="kanban-tip" id="kanban-tip">
-            <span>💡 Arraste os cards entre as colunas para alterar o status das tarefas.</span>
-        </div>
-
-        <!-- Filtros -->
-        <div class="db-filters" style="margin-bottom:16px;">
-
-            <label class="tf-label">Prioridade</label>
-            <div class="db-pills" id="qpriority-pills">
-                <button class="db-pill active-priority" data-priority="all">✓ Todas</button>
-                <button class="db-pill" data-priority="alta">🔺 Alta</button>
-                <button class="db-pill" data-priority="media">⚡ Média</button>
-                <button class="db-pill" data-priority="baixa">🌱 Baixa</button>
-            </div>
-
-            <div class="db-filter-hr"></div>
-
-            <label class="tf-label">Vencimento</label>
-            <div class="db-pills" id="qdeadline-pills">
-                <button class="db-pill active-deadline" data-deadline="all">✓ Todas</button>
-                <button class="db-pill" data-deadline="overdue">🕘 Atrasadas</button>
-                <button class="db-pill" data-deadline="today">📅 Hoje</button>
-                <button class="db-pill" data-deadline="future">➡️ Futuras</button>
-                <button class="db-pill" data-deadline="none">📂 Sem data</button>
-            </div>
-
+        <!-- Tip — só aparece no desktop ao hover, no mobile não aparece -->
+        <div class="kanban-tip" id="kanban-tip" style="display:none;">
+            <span>💡 Arraste os cards entre as colunas para alterar o status.</span>
         </div>
 
         <!-- Busca -->
@@ -238,16 +215,27 @@
         const isMobile = window.innerWidth <= 768;
         tip.querySelector('span').textContent = isMobile
             ? '💡 Toque em "Mover ›" para mover as tarefas entre os status.'
-            : '💡 Arraste os cards entre as colunas para alterar o status das tarefas.';
+            : '💡 Arraste os cards entre as colunas para alterar o status.';
         tip.classList.remove('kanban-tip-hide');
         tip.style.display = 'flex';
-        setTimeout(() => {
+        clearTimeout(window._tipTimer);
+        window._tipTimer = setTimeout(() => {
             tip.classList.add('kanban-tip-hide');
             setTimeout(() => { tip.style.display = 'none'; }, 500);
-        }, 4000);
+        }, 3000);
     }
 
-    showKanbanTip();
+    // No desktop: mostrar tip ao hover nos cards
+    if (window.innerWidth > 768) {
+        document.querySelectorAll('.kanban-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                if (!window._tipShown) {
+                    window._tipShown = true;
+                    showKanbanTip();
+                }
+            });
+        });
+    }
 
     // ── Busca com lista unificada no mobile ─────────────────────
     const searchInput   = document.getElementById('kanban-search-input');
