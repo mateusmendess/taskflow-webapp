@@ -350,6 +350,48 @@ def perfil():
 
     return render_template("perfil.html")
 
+@main.route("/analytics")
+@login_required
+def analytics():
+    from datetime import date, timedelta
+
+    tasks = Task.query.filter_by(user_id=current_user.id).all()
+    today = date.today()
+
+    total_tasks     = len(tasks)
+    completed_tasks = len([t for t in tasks if t.status == "concluída"])
+    pending_tasks   = len([t for t in tasks if t.status == "pendente"])
+    progress_tasks  = len([t for t in tasks if t.status == "em_progresso"])
+    overdue_tasks   = len([t for t in tasks if t.due_date and t.due_date < today and t.status != "concluída"])
+    high_tasks      = len([t for t in tasks if t.priority == "alta"])
+    medium_tasks    = len([t for t in tasks if t.priority == "media"])
+    low_tasks       = len([t for t in tasks if t.priority == "baixa"])
+    completion_rate = round((completed_tasks / total_tasks * 100) if total_tasks > 0 else 0)
+    created_this_week = len([t for t in tasks if t.created_at.date() >= today - timedelta(days=7)])
+
+    week_labels = []
+    week_data   = []
+    days_pt = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"]
+    for i in range(6, -1, -1):
+        day = today - timedelta(days=i)
+        week_labels.append(days_pt[day.weekday()])
+        week_data.append(len([t for t in tasks if t.created_at.date() == day]))
+
+    return render_template("analytics.html",
+        total_tasks=total_tasks,
+        completed_tasks=completed_tasks,
+        pending_tasks=pending_tasks,
+        progress_tasks=progress_tasks,
+        overdue_tasks=overdue_tasks,
+        high_tasks=high_tasks,
+        medium_tasks=medium_tasks,
+        low_tasks=low_tasks,
+        completion_rate=completion_rate,
+        created_this_week=created_this_week,
+        week_labels=week_labels,
+        week_data=week_data
+    )
+
 @main.route("/logout")
 @login_required
 def logout():
