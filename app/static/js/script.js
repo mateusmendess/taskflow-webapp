@@ -385,3 +385,14 @@ async function moveListCard(optionBtn, taskId, newStatus) {
         card.dataset.status = oldStatus;
     }
 }
+
+// ── Confirmação de exclusão ─────────────────────────────────────
+document.querySelectorAll('.ta-danger[href*="delete"]').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const url = this.href;
+        if (confirm('Tem certeza que deseja excluir esta tarefa? Esta ação não pode ser desfeita.')) {
+            window.location.href = url;
+        }
+    });
+});
