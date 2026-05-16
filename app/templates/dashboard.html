@@ -342,6 +342,34 @@
     </div>
 </div>
 
+<script>
+    function switchView(view) {
+        const listEl    = document.getElementById('view-list');
+        const kanbanEl  = document.getElementById('view-kanban');
+        const btnList   = document.getElementById('btn-list');
+        const btnKanban = document.getElementById('btn-kanban');
+
+        if (view === 'list') {
+            listEl.style.display   = '';
+            kanbanEl.style.display = 'none';
+            btnList.classList.add('active');
+            btnKanban.classList.remove('active');
+            localStorage.setItem('tf-view', 'list');
+        } else {
+            listEl.style.display   = 'none';
+            kanbanEl.style.display = '';
+            btnList.classList.remove('active');
+            btnKanban.classList.add('active');
+            localStorage.setItem('tf-view', 'kanban');
+            if (typeof updateKanbanCounts === 'function') updateKanbanCounts();
+        }
+    }
+
+    // Restaura vista salva antes de qualquer renderização
+    const _savedView = localStorage.getItem('tf-view');
+    if (_savedView === 'kanban') switchView('kanban');
+</script>
+
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
 <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 
