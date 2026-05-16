@@ -10,4 +10,4 @@ login_manager = LoginManager()
 
 login_manager.login_view = "main.login"
 login_manager.login_message = "Faça login para acessar esta página."
-login_manager.login_message_category = "error"
+login_manager.login_message_category = "info"
