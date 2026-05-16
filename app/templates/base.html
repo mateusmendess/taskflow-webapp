@@ -97,6 +97,15 @@
             applyTheme(newTheme);
         });
 
+        // Detecta mudança do tema do sistema em tempo real
+        // Só aplica se o usuário não tiver escolhido manualmente
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+            const manualChoice = localStorage.getItem('tf-theme');
+            if (!manualChoice) {
+                applyTheme(e.matches ? 'dark' : 'light');
+            }
+        });
+
         // ── Hamburguer ──────────────────────────────────────────
         const hamburger = document.getElementById('nav-hamburger');
         const nav = document.getElementById('navbar-nav');
