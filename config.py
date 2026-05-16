@@ -1,5 +1,6 @@
 import os
 
+
 class Config:
     SECRET_KEY = os.environ.get("SECRET_KEY") or "chave-dev-taskflow"
 
@@ -7,6 +8,7 @@ class Config:
 
     if uri.startswith("postgres://"):
         uri = uri.replace("postgres://", "postgresql+pg8000://", 1)
+
     elif uri.startswith("postgresql://"):
         uri = uri.replace("postgresql://", "postgresql+pg8000://", 1)
 
