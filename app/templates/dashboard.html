@@ -197,6 +197,19 @@
                                     {% endif %}
                                     <a href="{{ url_for('main.edit_task', task_id=task.id) }}" class="ta-btn ta-secondary">Editar</a>
                                     <a href="{{ url_for('main.delete_task', task_id=task.id) }}" class="ta-btn ta-danger">Excluir</a>
+                                    <button class="k-move-btn" onclick="toggleMoveMenu(this)">Mover ›</button>
+                                </div>
+                                <div class="k-move-menu">
+                                    <div class="k-move-menu-label">Mover para</div>
+                                    {% if task.status != 'pendente' %}
+                                        <button class="k-move-option" onclick="moveListCard(this, '{{ task.id }}', 'pendente')"><span class="k-move-dot pend"></span>Pendente</button>
+                                    {% endif %}
+                                    {% if task.status != 'em_progresso' %}
+                                        <button class="k-move-option" onclick="moveListCard(this, '{{ task.id }}', 'em_progresso')"><span class="k-move-dot prog"></span>Em progresso</button>
+                                    {% endif %}
+                                    {% if task.status != 'concluída' %}
+                                        <button class="k-move-option" onclick="moveListCard(this, '{{ task.id }}', 'concluída')"><span class="k-move-dot done"></span>Concluída</button>
+                                    {% endif %}
                                 </div>
 
                             </div>
@@ -214,6 +227,30 @@
 
             <div class="kanban-tip" id="kanban-tip">
                 <span>💡 Arraste os cards entre as colunas para alterar o status das tarefas.</span>
+            </div>
+
+            <!-- Filtros do quadro -->
+            <div class="db-filters" style="margin-bottom:16px;">
+
+                <label class="tf-label">Prioridade</label>
+                <div class="db-pills" id="kpriority-pills">
+                    <button class="db-pill active-kpriority" data-kpriority="all">✓ Todas</button>
+                    <button class="db-pill" data-kpriority="alta">🔺 Alta</button>
+                    <button class="db-pill" data-kpriority="media">⚡ Média</button>
+                    <button class="db-pill" data-kpriority="baixa">🌱 Baixa</button>
+                </div>
+
+                <div class="db-filter-hr"></div>
+
+                <label class="tf-label">Vencimento</label>
+                <div class="db-pills" id="kdeadline-pills">
+                    <button class="db-pill active-kdeadline" data-kdeadline="all">✓ Todas</button>
+                    <button class="db-pill" data-kdeadline="overdue">🕘 Atrasadas</button>
+                    <button class="db-pill" data-kdeadline="today">📅 Hoje</button>
+                    <button class="db-pill" data-kdeadline="future">➡️ Futuras</button>
+                    <button class="db-pill" data-kdeadline="none">📂 Sem data</button>
+                </div>
+
             </div>
 
             <div class="kanban-search">
@@ -238,6 +275,9 @@
                                 <div class="kanban-card kanban-card-pend" 
                                      data-id="{{ task.id }}"
                                      data-status="pendente"
+                                     data-priority="{{ task.priority }}"
+                                     data-due-date="{{ task.due_date }}"
+                                     data-today="{{ today }}"
                                      >
                                     <div class="kanban-card-title">{{ task.title }}</div>
                                     {% if task.description %}
@@ -285,6 +325,9 @@
                                 <div class="kanban-card kanban-card-prog" 
                                      data-id="{{ task.id }}"
                                      data-status="em_progresso"
+                                     data-priority="{{ task.priority }}"
+                                     data-due-date="{{ task.due_date }}"
+                                     data-today="{{ today }}"
                                      >
                                     <div class="kanban-card-title">{{ task.title }}</div>
                                     {% if task.description %}
@@ -332,6 +375,9 @@
                                 <div class="kanban-card kanban-card-done" 
                                      data-id="{{ task.id }}"
                                      data-status="concluída"
+                                     data-priority="{{ task.priority }}"
+                                     data-due-date="{{ task.due_date }}"
+                                     data-today="{{ today }}"
                                      >
                                     <div class="kanban-card-title">{{ task.title }}</div>
                                     {% if task.description %}
@@ -403,6 +449,10 @@
     function showKanbanTip() {
         const tip = document.getElementById('kanban-tip');
         if (!tip) return;
+        const isMobile = window.innerWidth <= 768;
+        tip.querySelector('span').textContent = isMobile
+            ? '💡 Toque em "Mover ›" para mover as tarefas entre os status.'
+            : '💡 Arraste os cards entre as colunas para alterar o status das tarefas.';
         tip.classList.remove('kanban-tip-hide');
         tip.style.display = 'flex';
         clearTimeout(window._kanbanTipTimer);
@@ -412,14 +462,52 @@
         }, 4000);
     }
 
-    // Busca no quadro do dashboard
+    // Busca e filtros no quadro do dashboard
+    let kPriority = 'all';
+    let kDeadline = 'all';
+
     function filterKanbanDash(query) {
-        const q = query.toLowerCase();
+        applyKanbanDashFilters(query);
+    }
+
+    function applyKanbanDashFilters(query) {
+        const q = (query || document.querySelector('#view-kanban input')?.value || '').toLowerCase();
         document.querySelectorAll('#view-kanban .kanban-card').forEach(card => {
-            const title = (card.querySelector('.kanban-card-title')?.textContent || '').toLowerCase();
-            card.style.display = title.includes(q) ? '' : 'none';
+            const title    = (card.querySelector('.kanban-card-title')?.textContent || '').toLowerCase();
+            const priority = card.dataset.priority || '';
+            const dueDate  = card.dataset.dueDate || '';
+            const today    = card.dataset.today || '';
+
+            const searchMatch   = title.includes(q);
+            const priorityMatch = kPriority === 'all' || priority === kPriority;
+
+            let deadlineMatch = true;
+            if (kDeadline === 'overdue') deadlineMatch = dueDate && dueDate < today;
+            else if (kDeadline === 'today')  deadlineMatch = dueDate === today;
+            else if (kDeadline === 'future') deadlineMatch = dueDate && dueDate > today;
+            else if (kDeadline === 'none')   deadlineMatch = !dueDate;
+
+            card.style.display = (searchMatch && priorityMatch && deadlineMatch) ? '' : 'none';
         });
     }
+
+    document.querySelectorAll('#kpriority-pills .db-pill').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('#kpriority-pills .db-pill').forEach(b => b.classList.remove('active-kpriority'));
+            btn.classList.add('active-kpriority');
+            kPriority = btn.dataset.kpriority;
+            applyKanbanDashFilters();
+        });
+    });
+
+    document.querySelectorAll('#kdeadline-pills .db-pill').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('#kdeadline-pills .db-pill').forEach(b => b.classList.remove('active-kdeadline'));
+            btn.classList.add('active-kdeadline');
+            kDeadline = btn.dataset.kdeadline;
+            applyKanbanDashFilters();
+        });
+    });
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>

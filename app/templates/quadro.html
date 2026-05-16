@@ -209,30 +209,24 @@
         });
     });
 
-    function showKanbanTip() {
-        const tip = document.getElementById('kanban-tip');
-        if (!tip) return;
-        const isMobile = window.innerWidth <= 768;
-        tip.querySelector('span').textContent = isMobile
-            ? '💡 Toque em "Mover ›" para mover as tarefas entre os status.'
-            : '💡 Arraste os cards entre as colunas para alterar o status.';
-        tip.classList.remove('kanban-tip-hide');
-        tip.style.display = 'flex';
-        clearTimeout(window._tipTimer);
-        window._tipTimer = setTimeout(() => {
-            tip.classList.add('kanban-tip-hide');
-            setTimeout(() => { tip.style.display = 'none'; }, 500);
-        }, 3000);
-    }
-
-    // No desktop: mostrar tip ao hover nos cards
+    // No desktop: mostrar tip ao hover nos cards, sumir ao tirar o cursor
     if (window.innerWidth > 768) {
+        const tip = document.getElementById('kanban-tip');
         document.querySelectorAll('.kanban-card').forEach(card => {
             card.addEventListener('mouseenter', () => {
-                if (!window._tipShown) {
-                    window._tipShown = true;
-                    showKanbanTip();
-                }
+                if (!tip) return;
+                clearTimeout(window._tipTimer);
+                tip.querySelector('span').textContent = '💡 Arraste os cards entre as colunas para alterar o status.';
+                tip.classList.remove('kanban-tip-hide');
+                tip.style.display = 'flex';
+            });
+            card.addEventListener('mouseleave', () => {
+                if (!tip) return;
+                clearTimeout(window._tipTimer);
+                window._tipTimer = setTimeout(() => {
+                    tip.classList.add('kanban-tip-hide');
+                    setTimeout(() => { tip.style.display = 'none'; tip.classList.remove('kanban-tip-hide'); }, 400);
+                }, 300);
             });
         });
     }
