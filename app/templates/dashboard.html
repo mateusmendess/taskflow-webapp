@@ -213,8 +213,7 @@
         <div id="view-kanban" style="display:none;">
 
             <div class="kanban-tip" id="kanban-tip">
-                💡 Arraste os cards entre as colunas para mover as tarefas.
-                <button onclick="dismissTip()" class="kanban-tip-close">✕</button>
+                <span>💡 Arraste os cards entre as colunas para alterar o status das tarefas.</span>
             </div>
 
             <div class="kanban-board">
@@ -368,9 +367,7 @@
             btnKanban.classList.add('active');
             localStorage.setItem('tf-view', 'kanban');
             if (typeof updateKanbanCounts === 'function') updateKanbanCounts();
-            // Mostra a dica sempre que abrir o quadro
-            const tip = document.getElementById('kanban-tip');
-            if (tip) tip.style.display = 'flex';
+            showKanbanTip();
         }
     }
 
@@ -378,10 +375,17 @@
     const _savedView = localStorage.getItem('tf-view');
     if (_savedView === 'kanban') switchView('kanban');
 
-    // Dica do Kanban — fecha ao clicar no X
-    function dismissTip() {
+    // Dica do Quadro — popup que some automaticamente
+    function showKanbanTip() {
         const tip = document.getElementById('kanban-tip');
-        if (tip) tip.style.display = 'none';
+        if (!tip) return;
+        tip.classList.remove('kanban-tip-hide');
+        tip.style.display = 'flex';
+        clearTimeout(window._kanbanTipTimer);
+        window._kanbanTipTimer = setTimeout(() => {
+            tip.classList.add('kanban-tip-hide');
+            setTimeout(() => { tip.style.display = 'none'; }, 500);
+        }, 4000);
     }
 </script>
 

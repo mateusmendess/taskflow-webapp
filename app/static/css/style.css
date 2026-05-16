@@ -1155,6 +1155,11 @@ body.dark .kanban-done { background: #052e16; border-bottom-color: #166534; }
     box-shadow: 0 6px 16px rgba(0,0,0,0.1);
 }
 
+.kanban-card.dragging {
+    opacity: 0.4;
+    cursor: grabbing;
+}
+
 .kanban-card-done {
     background: var(--tf-done-bg) !important;
     border-color: var(--tf-done-border) !important;
@@ -1197,6 +1202,20 @@ body.dark .kanban-done { background: #052e16; border-bottom-color: #166534; }
     gap: 5px;
 }
 
+/* Badge em progresso */
+.tb-progress { background: #eff6ff; color: #2563eb; }
+body.dark .tb-progress { background: #1e3a5f; color: #93c5fd; }
+
+/* Card em progresso na lista */
+.progress-card { background: #eff6ff !important; border-color: #bfdbfe !important; }
+body.dark .progress-card { background: #1e3a5f !important; border-color: #1d4ed8 !important; }
+
+@media (max-width: 768px) {
+    .kanban-board { grid-template-columns: 1fr; }
+    .view-toggle { flex-wrap: wrap; }
+}
+
+/* ── SortableJS classes ────────────────────────────────────── */
 .kanban-ghost {
     opacity: 0.3;
     background: var(--tf-primary-bg);
@@ -1213,13 +1232,105 @@ body.dark .kanban-done { background: #052e16; border-bottom-color: #166534; }
     cursor: grabbing !important;
 }
 
-.tb-progress { background: #eff6ff; color: #2563eb; }
-body.dark .tb-progress { background: #1e3a5f; color: #93c5fd; }
+/* ── Kanban tip ────────────────────────────────────────────── */
+.kanban-tip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--tf-primary-bg);
+    border: 1.5px solid #bfdbfe;
+    border-radius: 10px;
+    padding: 10px 16px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--tf-primary);
+    margin-bottom: 16px;
+}
 
-.progress-card { background: #eff6ff !important; border-color: #bfdbfe !important; }
-body.dark .progress-card { background: #1e3a5f !important; border-color: #1d4ed8 !important; }
+body.dark .kanban-tip {
+    background: #1e3a5f;
+    border-color: #1d4ed8;
+    color: #93c5fd;
+}
 
-@media (max-width: 768px) {
-    .kanban-board { grid-template-columns: 1fr; }
-    .view-toggle { flex-wrap: wrap; }
+.kanban-tip-close {
+    background: transparent;
+    border: none;
+    color: var(--tf-primary);
+    cursor: pointer;
+    font-size: 0.85rem;
+    padding: 0 4px;
+    line-height: 1;
+    opacity: 0.7;
+    transition: opacity 0.15s;
+}
+
+.kanban-tip-close:hover { opacity: 1; }
+
+body.dark .kanban-tip-close { color: #93c5fd; }
+
+/* ── Kanban tip refinado ───────────────────────────────────── */
+.kanban-tip {
+    gap: 12px;
+}
+
+.kanban-tip span {
+    flex: 1;
+}
+
+.kanban-tip-close {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: rgba(37,99,235,0.12);
+    border: none;
+    color: var(--tf-primary);
+    cursor: pointer;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.15s;
+}
+
+.kanban-tip-close:hover {
+    background: rgba(37,99,235,0.22);
+}
+
+body.dark .kanban-tip-close {
+    background: rgba(147,197,253,0.15);
+    color: #93c5fd;
+}
+
+/* ── Kanban tip popup ──────────────────────────────────────── */
+.kanban-tip {
+    display: none;
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1f2937;
+    color: #f1f5f9;
+    padding: 12px 22px;
+    border-radius: 24px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    z-index: 999;
+    white-space: nowrap;
+    animation: tipSlideUp 0.35s ease;
+}
+
+.kanban-tip-hide {
+    animation: tipFadeOut 0.5s ease forwards;
+}
+
+@keyframes tipSlideUp {
+    from { opacity: 0; transform: translateX(-50%) translateY(16px); }
+    to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+@keyframes tipFadeOut {
+    to { opacity: 0; transform: translateX(-50%) translateY(16px); }
 }
