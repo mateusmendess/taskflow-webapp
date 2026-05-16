@@ -396,3 +396,14 @@ document.querySelectorAll('.ta-danger[href*="delete"]').forEach(btn => {
         }
     });
 });
+
+// ── Fix cor dos selects quando opção padrão selecionada ────────
+function updateSelectColor(select) {
+    const isDefault = select.value === '' || select.value === 'none';
+    select.style.color = isDefault ? 'var(--tf-muted)' : 'var(--tf-text)';
+}
+
+document.querySelectorAll('select.tf-input').forEach(select => {
+    updateSelectColor(select);
+    select.addEventListener('change', () => updateSelectColor(select));
+});

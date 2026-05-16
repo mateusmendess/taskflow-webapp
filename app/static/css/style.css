@@ -1675,3 +1675,21 @@ input[type="radio"]:checked + .avatar-option {
     opacity: 0;
     transform: translateX(-50%) translateY(16px);
 }
+
+/* ── Fix placeholder e select default ─────────────────────── */
+.tf-input::placeholder {
+    color: var(--tf-muted);
+    opacity: 1;
+}
+
+select.tf-input {
+    color: var(--tf-text);
+}
+
+select.tf-input option[value=""] {
+    color: var(--tf-muted);
+}
+
+input[type="date"].tf-input:not(:valid) {
+    color: var(--tf-muted);
+}
