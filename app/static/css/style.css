@@ -1355,3 +1355,74 @@ body.dark .kanban-card-prog {
     background: #1e3a5f !important;
     border-color: #1d4ed8 !important;
 }
+
+/* ── Responsividade mobile — novas páginas ─────────────────── */
+@media (max-width: 768px) {
+
+    /* Analytics — gráficos empilhados */
+    .db-page [style*="grid-template-columns: 1fr 1fr"] {
+        display: block !important;
+    }
+
+    .db-page [style*="grid-template-columns: 1fr 1fr"] .db-card {
+        margin-bottom: 16px;
+    }
+
+    /* Kanban — colunas empilhadas */
+    .kanban-board {
+        grid-template-columns: 1fr;
+    }
+
+    /* Toggle Lista/Quadro */
+    .view-toggle {
+        gap: 4px;
+    }
+
+    .view-btn {
+        padding: 5px 10px;
+        font-size: 0.78rem;
+    }
+
+    /* db-card-title com justify space-between */
+    .db-card-title {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+
+    /* Analytics stats — 2 colunas */
+    .db-stats[style*="repeat(4"] {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+
+    /* Kanban tip */
+    .kanban-tip {
+        font-size: 0.78rem;
+        padding: 10px 14px;
+        white-space: normal;
+        text-align: center;
+    }
+
+    /* Perfil — avatar menor */
+    .db-page [style*="width: 56px"] {
+        width: 44px !important;
+        height: 44px !important;
+        font-size: 1.1rem !important;
+    }
+}
+
+/* ── Analytics grid ────────────────────────────────────────── */
+.analytics-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+    .analytics-grid {
+        grid-template-columns: 1fr;
+    }
+}
