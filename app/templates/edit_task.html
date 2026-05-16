@@ -30,8 +30,9 @@
                 <div>
                     <label class="tf-label">Status</label>
                     <select name="status" class="tf-input" required>
-                        <option value="pendente"  {% if task.status == "pendente"  %}selected{% endif %}>⏳ Pendente</option>
-                        <option value="concluída" {% if task.status == "concluída" %}selected{% endif %}>✓ Concluída</option>
+                        <option value="pendente"     {% if task.status == "pendente"     %}selected{% endif %}>⏳ Pendente</option>
+                        <option value="em_progresso" {% if task.status == "em_progresso" %}selected{% endif %}>🔄 Em progresso</option>
+                        <option value="concluída"    {% if task.status == "concluída"    %}selected{% endif %}>✓ Concluída</option>
                     </select>
                 </div>
             </div>
