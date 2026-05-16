@@ -1708,3 +1708,39 @@ select.tf-input option[value=""] {
 input[type="date"].tf-input:not(:valid) {
     color: var(--tf-muted);
 }
+
+/* ── Cards compactos no mobile ─────────────────────────────── */
+@media (max-width: 768px) {
+    .task-card { padding: 12px 14px; }
+
+    .task-card .task-card-desc-mobile {
+        display: none;
+        margin-bottom: 10px;
+    }
+
+    .task-card.expanded .task-card-desc-mobile {
+        display: block;
+    }
+
+    .task-card-expand-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.72rem;
+        color: var(--tf-muted);
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        margin-bottom: 8px;
+        font-family: inherit;
+        font-weight: 600;
+    }
+
+    .task-card-expand-btn:hover { color: var(--tf-primary); }
+}
+
+@media (min-width: 769px) {
+    .task-card-expand-btn { display: none; }
+    .task-card-desc-mobile { display: block !important; }
+}

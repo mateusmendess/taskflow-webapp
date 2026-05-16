@@ -407,3 +407,13 @@ document.querySelectorAll('select.tf-input').forEach(select => {
     updateSelectColor(select);
     select.addEventListener('change', () => updateSelectColor(select));
 });
+
+// ── Toggle descrição no mobile ──────────────────────────────────
+function toggleDesc(btn) {
+    const card = btn.closest('.task-card');
+    const isExpanded = card.classList.toggle('expanded');
+    const icon = btn.querySelector('.expand-icon');
+    btn.innerHTML = isExpanded
+        ? '<span class="expand-icon">▴</span> Ocultar descrição'
+        : '<span class="expand-icon">▾</span> Ver descrição';
+}

@@ -163,7 +163,12 @@
                                 data-overdue="{% if task.due_date and task.due_date < today and task.status != 'concluída' %}true{% else %}false{% endif %}"
                             >
                                 <h3>{{ task.title }}</h3>
-                                <p>{{ task.description }}</p>
+                                {% if task.description %}
+                                    <button class="task-card-expand-btn" onclick="toggleDesc(this)">
+                                        <span class="expand-icon">▾</span> Ver descrição
+                                    </button>
+                                    <p class="task-card-desc-mobile">{{ task.description }}</p>
+                                {% endif %}
 
                                 <div class="task-badges">
                                     {% if task.status == "concluída" %}
