@@ -924,3 +924,35 @@ textarea.tf-input { resize: vertical; }
         text-align: center;
     }
 }
+
+/* ── Fixes mobile ──────────────────────────────────────────── */
+
+/* Remove marca d'água do botão hamburguer após clique */
+.nav-hamburger:focus {
+    outline: none;
+}
+
+.nav-hamburger:focus-visible {
+    outline: 2px solid rgba(255,255,255,0.4);
+}
+
+/* Fix input date no iOS */
+input[type="date"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+@media (max-width: 480px) {
+    input[type="date"] {
+        font-size: 0.85rem;
+        padding: 10px 10px;
+    }
+
+    .db-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+}
