@@ -317,6 +317,12 @@
         });
     });
 
+    function toggleKanbanDesc(btn) {
+        const card = btn.closest('.kanban-card');
+        const isExpanded = card.classList.toggle('expanded');
+        btn.textContent = isExpanded ? '▴ Ocultar descrição' : '▾ Ver descrição';
+    }
+
     function toggleMoveMenu(btn) {
         const card = btn.closest('.kanban-card');
         const menu = card.querySelector('.k-move-menu');
