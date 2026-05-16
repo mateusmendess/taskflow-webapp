@@ -2,88 +2,53 @@
 
 {% block content %}
 
-<div class="form-container">
+<div class="edit-page">
+    <div class="edit-card">
 
-    <h1>Editar Tarefa</h1>
+        <div style="text-align: center; margin-bottom: 28px;">
+            <div class="auth-icon">✏️</div>
+            <h1 class="auth-title">Editar Tarefa</h1>
+        </div>
 
-    <form method="POST">
+        <form method="POST">
 
-        <input
-            type="text"
-            name="title"
-            value="{{ task.title }}"
-            required
-        >
+            <label class="tf-label">Título</label>
+            <input type="text" name="title" class="tf-input" value="{{ task.title }}" required>
 
-        <textarea
-            name="description"
-            rows="5"
-        >{{ task.description }}</textarea>
+            <label class="tf-label">Descrição</label>
+            <textarea name="description" class="tf-input" rows="4">{{ task.description }}</textarea>
 
-        <select name="priority" required>
+            <div class="db-row">
+                <div>
+                    <label class="tf-label">Prioridade</label>
+                    <select name="priority" class="tf-input" required>
+                        <option value="baixa" {% if task.priority == "baixa" %}selected{% endif %}>🌱 Baixa</option>
+                        <option value="media" {% if task.priority == "media" %}selected{% endif %}>⚡ Média</option>
+                        <option value="alta"  {% if task.priority == "alta"  %}selected{% endif %}>🔺 Alta</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="tf-label">Status</label>
+                    <select name="status" class="tf-input" required>
+                        <option value="pendente"  {% if task.status == "pendente"  %}selected{% endif %}>⏳ Pendente</option>
+                        <option value="concluída" {% if task.status == "concluída" %}selected{% endif %}>✓ Concluída</option>
+                    </select>
+                </div>
+            </div>
 
-            <option
-                value="baixa"
-                {% if task.priority == "baixa" %}selected{% endif %}
-    >
-                Prioridade Baixa
-            </option>
+            <label class="tf-label">Data de vencimento</label>
+            <input type="date" name="due_date" class="tf-input"
+                value="{{ task.due_date.strftime('%Y-%m-%d') if task.due_date else '' }}">
 
-            <option
-                 value="media"
-                {% if task.priority == "media" %}selected{% endif %}
-    >
-                Prioridade Média
-            </option>
+            <button type="submit" class="tf-btn-primary">Salvar alterações</button>
 
-            <option
-                value="alta"
-                 {% if task.priority == "alta" %}selected{% endif %}
-    >
-                Prioridade Alta
-            </option>
+        </form>
 
-        </select>
+        <div style="text-align: center; margin-top: 16px;">
+            <a href="{{ url_for('main.dashboard') }}" class="ta-btn ta-secondary">← Voltar</a>
+        </div>
 
-        <select name="status" required>
-
-            <option
-                value="pendente"
-                {% if task.status == "pendente" %}selected{% endif %}
-            >
-                ⏳ Pendente
-            </option>
-
-            <option
-                value="concluída"
-                {% if task.status == "concluída" %}selected{% endif %}
-            >
-                ✓ Concluída
-            </option>
-
-        </select>
-
-        <input
-            type="date"
-            name="due_date"
-            value="{{ task.due_date.strftime('%Y-%m-%d') if task.due_date else '' }}"
-        >
-
-        <button type="submit">
-            Salvar alterações
-        </button>
-
-    </form>
-
-    <br>
-
-    <a
-        href="{{ url_for('main.dashboard') }}"
-        class="btn secondary"
-    >
-        Voltar
-    </a>
-
+    </div>
 </div>
 
 {% endblock %}
