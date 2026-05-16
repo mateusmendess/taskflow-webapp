@@ -7,12 +7,11 @@
     <title>TaskFlow</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <script>
-        // Aplica o tema antes do body renderizar para evitar flash
         (function() {
             const saved = localStorage.getItem('tf-theme');
             const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
             if (saved === 'dark' || (!saved && prefersDark)) {
-                document.documentElement.classList.add('dark-early');
+                document.documentElement.setAttribute('data-theme', 'dark');
             }
         })();
     </script>
@@ -29,12 +28,22 @@
 
         <div class="navbar-right">
 
-            <!-- Botão dark mode -->
+            <nav class="navbar-nav" id="navbar-nav">
+                <a href="{{ url_for('main.index') }}" class="nav-link">Início</a>
+
+                {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('main.dashboard') }}" class="nav-link">Dashboard</a>
+                    <a href="{{ url_for('main.logout') }}" class="nav-link nav-link-logout">Logout</a>
+                {% else %}
+                    <a href="{{ url_for('main.login') }}" class="nav-link">Login</a>
+                    <a href="{{ url_for('main.register') }}" class="nav-link nav-link-register">Cadastro</a>
+                {% endif %}
+            </nav>
+
             <button class="dark-toggle" id="dark-toggle" aria-label="Alternar tema">
-                <span class="dark-toggle-icon" id="dark-toggle-icon">🌙</span>
+                <span id="dark-toggle-icon">🌙</span>
             </button>
 
-            <!-- Hamburguer -->
             <button class="nav-hamburger" id="nav-hamburger" aria-label="Menu">
                 <span></span>
                 <span></span>
@@ -42,20 +51,6 @@
             </button>
 
         </div>
-
-        <nav class="navbar-nav" id="navbar-nav">
-
-            <a href="{{ url_for('main.index') }}" class="nav-link">Início</a>
-
-            {% if current_user.is_authenticated %}
-                <a href="{{ url_for('main.dashboard') }}" class="nav-link">Dashboard</a>
-                <a href="{{ url_for('main.logout') }}" class="nav-link nav-link-logout">Logout</a>
-            {% else %}
-                <a href="{{ url_for('main.login') }}" class="nav-link">Login</a>
-                <a href="{{ url_for('main.register') }}" class="nav-link nav-link-register">Cadastro</a>
-            {% endif %}
-
-        </nav>
 
     </header>
 
@@ -74,36 +69,35 @@
     </main>
 
     <script>
-        // ── Dark mode ──────────────────────────────────────────
-        const body = document.body;
+        // ── Dark mode ───────────────────────────────────────────
+        const html = document.documentElement;
         const toggleBtn = document.getElementById('dark-toggle');
         const toggleIcon = document.getElementById('dark-toggle-icon');
 
         function applyTheme(theme) {
             if (theme === 'dark') {
-                body.classList.add('dark');
+                html.setAttribute('data-theme', 'dark');
+                document.body.classList.add('dark');
                 toggleIcon.textContent = '☀️';
             } else {
-                body.classList.remove('dark');
+                html.removeAttribute('data-theme');
+                document.body.classList.remove('dark');
                 toggleIcon.textContent = '🌙';
             }
         }
 
-        // Carrega tema salvo ou preferência do sistema
         const saved = localStorage.getItem('tf-theme');
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        const initialTheme = saved || (prefersDark ? 'dark' : 'light');
-        applyTheme(initialTheme);
+        applyTheme(saved || (prefersDark ? 'dark' : 'light'));
 
-        // Toggle ao clicar
         toggleBtn.addEventListener('click', () => {
-            const isDark = body.classList.contains('dark');
+            const isDark = document.body.classList.contains('dark');
             const newTheme = isDark ? 'light' : 'dark';
             localStorage.setItem('tf-theme', newTheme);
             applyTheme(newTheme);
         });
 
-        // ── Hamburguer ─────────────────────────────────────────
+        // ── Hamburguer ──────────────────────────────────────────
         const hamburger = document.getElementById('nav-hamburger');
         const nav = document.getElementById('navbar-nav');
 

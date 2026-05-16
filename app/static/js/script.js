@@ -97,6 +97,11 @@ function applyFilters() {
     if (emptyMessage) {
         emptyMessage.style.display = visibleCards === 0 ? "block" : "none";
     }
+
+    const tasksBg = document.querySelector(".db-tasks-bg");
+    if (tasksBg) {
+        tasksBg.style.display = visibleCards === 0 ? "none" : "";
+    }
 }
 
 filterButtons.forEach(button => {

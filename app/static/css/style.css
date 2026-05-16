@@ -1045,3 +1045,15 @@ input[type="date"].tf-input::-webkit-datetime-edit-fields-wrapper {
 .dark-early body {
     background: #0f172a;
 }
+
+/* ── Fix navbar layout desktop ─────────────────────────────── */
+.navbar-right {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Esconde tasks-bg quando não há tarefas visíveis */
+.db-tasks-bg:empty {
+    display: none;
+}
