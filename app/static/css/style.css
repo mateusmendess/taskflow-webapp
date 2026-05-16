@@ -1652,9 +1652,9 @@ input[type="radio"]:checked + .avatar-option {
 /* ── Welcome popup ─────────────────────────────────────────── */
 .welcome-popup {
     position: fixed;
-    bottom: 28px;
+    top: 80px;
     left: 50%;
-    transform: translateX(-50%) translateY(20px);
+    transform: translateX(-50%) translateY(-20px);
     background: #1f2937;
     color: #f1f5f9;
     padding: 12px 22px;
@@ -1688,7 +1688,7 @@ body.dark .welcome-popup {
 
 .welcome-popup-hide {
     opacity: 0;
-    transform: translateX(-50%) translateY(16px);
+    transform: translateX(-50%) translateY(-16px);
 }
 
 /* ── Fix placeholder e select default ─────────────────────── */
