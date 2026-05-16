@@ -35,7 +35,10 @@ function initKanban() {
                 if (oldStatus === newStatus) return;
 
                 card.dataset.status = newStatus;
-                card.classList.toggle('kanban-card-done', newStatus === 'concluída');
+                card.classList.remove('kanban-card-pend', 'kanban-card-prog', 'kanban-card-done');
+                if (newStatus === 'concluída')    card.classList.add('kanban-card-done');
+                if (newStatus === 'em_progresso') card.classList.add('kanban-card-prog');
+                if (newStatus === 'pendente')     card.classList.add('kanban-card-pend');
                 updateKanbanCounts();
 
                 // Sincroniza o card na vista de lista

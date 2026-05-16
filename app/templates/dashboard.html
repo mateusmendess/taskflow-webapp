@@ -229,7 +229,7 @@
                          >
                         {% for task in tasks %}
                             {% if task.status == 'pendente' %}
-                                <div class="kanban-card" 
+                                <div class="kanban-card kanban-card-pend" 
                                      data-id="{{ task.id }}"
                                      data-status="pendente"
                                      >
@@ -270,7 +270,7 @@
                          >
                         {% for task in tasks %}
                             {% if task.status == 'em_progresso' %}
-                                <div class="kanban-card" 
+                                <div class="kanban-card kanban-card-prog" 
                                      data-id="{{ task.id }}"
                                      data-status="em_progresso"
                                      >
