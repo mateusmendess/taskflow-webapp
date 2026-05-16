@@ -6,9 +6,9 @@ class Config:
     uri = os.environ.get("DATABASE_URL") or "sqlite:///taskflow.db"
 
     if uri.startswith("postgres://"):
-        uri = uri.replace("postgres://", "postgresql+psycopg://", 1)
+        uri = uri.replace("postgres://", "postgresql+pg8000://", 1)
     elif uri.startswith("postgresql://"):
-        uri = uri.replace("postgresql://", "postgresql+psycopg://", 1)
+        uri = uri.replace("postgresql://", "postgresql+pg8000://", 1)
 
     SQLALCHEMY_DATABASE_URI = uri
 
