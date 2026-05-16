@@ -508,9 +508,10 @@
             welcomePopup.remove();
         } else {
             sessionStorage.setItem('tf-welcomed', '1');
-            setTimeout(() => welcomePopup.classList.add('welcome-popup-show'), 300);
-            setTimeout(() => welcomePopup.classList.add('welcome-popup-hide'), 3500);
-            setTimeout(() => welcomePopup.remove(), 4000);
+            // Aguarda o flash de login sumir antes de mostrar
+            setTimeout(() => welcomePopup.classList.add('welcome-popup-show'), 4000);
+            setTimeout(() => welcomePopup.classList.add('welcome-popup-hide'), 7000);
+            setTimeout(() => welcomePopup.remove(), 7500);
         }
     }
 
