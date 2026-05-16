@@ -47,6 +47,12 @@
                 <span id="dark-toggle-icon">🌙</span>
             </button>
 
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('main.perfil') }}" class="nav-avatar" title="Meu perfil">
+                    {{ current_user.avatar or current_user.name[0].upper() }}
+                </a>
+            {% endif %}
+
             <button class="nav-hamburger" id="nav-hamburger" aria-label="Menu">
                 <span></span>
                 <span></span>

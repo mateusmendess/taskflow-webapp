@@ -17,69 +17,47 @@
             Informações da conta
         </div>
 
-        <div style="
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            padding: 16px;
-            background: var(--tf-surface-2);
-            border: 1.5px solid var(--tf-border);
-            border-radius: 12px;
-            margin-bottom: 20px;
-        ">
-            <div style="
-                width: 56px;
-                height: 56px;
-                border-radius: 50%;
-                background: var(--tf-primary-bg);
-                border: 2px solid var(--tf-primary);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 1.8rem;
-                flex-shrink: 0;
-            ">
-                {{ current_user.avatar or current_user.name[0].upper() }}
+        <div style="display:flex; align-items:center; gap:20px; padding:16px; background:var(--tf-surface-2); border:1.5px solid var(--tf-border); border-radius:12px; margin-bottom:24px;">
+            <!-- Avatar clicável -->
+            <div style="position:relative; flex-shrink:0;">
+                <div class="perfil-avatar" id="perfil-avatar" onclick="toggleAvatarPicker()" title="Clique para trocar">
+                    {{ current_user.avatar or current_user.name[0].upper() }}
+                </div>
+                <div class="perfil-avatar-hint">✏️</div>
             </div>
             <div>
-                <div style="font-size: 1rem; font-weight: 700; color: var(--tf-text);">
-                    {{ current_user.name }}
-                </div>
-                <div style="font-size: 0.85rem; color: var(--tf-muted);">
-                    {{ current_user.email }}
-                </div>
+                <div style="font-size:1rem; font-weight:700; color:var(--tf-text);">{{ current_user.name }}</div>
+                <div style="font-size:0.85rem; color:var(--tf-muted);">{{ current_user.email }}</div>
+                <div style="font-size:0.78rem; color:var(--tf-primary); margin-top:4px; cursor:pointer;" onclick="toggleAvatarPicker()">Trocar avatar</div>
             </div>
         </div>
 
-        <!-- Escolher avatar -->
-        <form method="POST" style="margin-bottom: 24px;">
-            <input type="hidden" name="action" value="update_avatar">
-
+        <!-- Avatar picker inline -->
+        <div class="avatar-picker" id="avatar-picker">
             <label class="tf-label">Escolha seu avatar</label>
-            <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px;">
-                {% for emoji in ['🐱', '🐶', '🦊', '🐼', '🐸'] %}
-                    <label style="cursor: pointer;">
-                        <input type="radio" name="avatar" value="{{ emoji }}"
-                            {% if current_user.avatar == emoji %}checked{% endif %}
-                            style="display: none;">
-                        <div class="avatar-option {% if current_user.avatar == emoji %}avatar-selected{% endif %}">
-                            {{ emoji }}
-                        </div>
-                    </label>
-                {% endfor %}
-            </div>
-
-            <button type="submit" class="tf-btn-primary">Salvar avatar</button>
-        </form>
+            <form method="POST" id="avatar-form">
+                <input type="hidden" name="action" value="update_avatar">
+                <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:16px;">
+                    {% for emoji in ['🐱', '🐶', '🦊', '🐼', '🐸'] %}
+                        <label style="cursor:pointer;" onclick="selectAvatar('{{ emoji }}', this)">
+                            <input type="radio" name="avatar" value="{{ emoji }}"
+                                {% if (current_user.avatar or '🐱') == emoji %}checked{% endif %}
+                                style="display:none;">
+                            <div class="avatar-option {% if (current_user.avatar or '🐱') == emoji %}avatar-selected{% endif %}">
+                                {{ emoji }}
+                            </div>
+                        </label>
+                    {% endfor %}
+                </div>
+                <button type="submit" class="tf-btn-primary">Salvar avatar</button>
+            </form>
+        </div>
 
         <!-- Editar nome -->
         <form method="POST">
             <input type="hidden" name="action" value="update_name">
-
             <label class="tf-label">Nome</label>
-            <input type="text" name="name" class="tf-input"
-                value="{{ current_user.name }}" required>
-
+            <input type="text" name="name" class="tf-input" value="{{ current_user.name }}" required>
             <button type="submit" class="tf-btn-primary">Salvar nome</button>
         </form>
 
@@ -87,33 +65,37 @@
 
     <!-- Card de senha -->
     <div class="db-card">
-
         <div class="db-card-title">
             <span class="db-card-icon">🔒</span>
             Alterar senha
         </div>
-
         <form method="POST">
             <input type="hidden" name="action" value="update_password">
-
             <label class="tf-label">Senha atual</label>
-            <input type="password" name="current_password" class="tf-input"
-                placeholder="••••••••" required>
-
+            <input type="password" name="current_password" class="tf-input" placeholder="••••••••" required>
             <label class="tf-label">Nova senha</label>
-            <input type="password" name="new_password" class="tf-input"
-                placeholder="••••••••" required>
-
+            <input type="password" name="new_password" class="tf-input" placeholder="••••••••" required>
             <label class="tf-label">Confirmar nova senha</label>
-            <input type="password" name="confirm_password" class="tf-input"
-                placeholder="••••••••" required>
-
+            <input type="password" name="confirm_password" class="tf-input" placeholder="••••••••" required>
             <button type="submit" class="tf-btn-primary">Atualizar senha</button>
-
         </form>
-
     </div>
 
 </div>
+
+<script>
+    function toggleAvatarPicker() {
+        const picker = document.getElementById('avatar-picker');
+        picker.classList.toggle('avatar-picker-open');
+    }
+
+    function selectAvatar(emoji, label) {
+        document.querySelectorAll('.avatar-option').forEach(o => o.classList.remove('avatar-selected'));
+        label.querySelector('.avatar-option').classList.add('avatar-selected');
+        document.getElementById('perfil-avatar').textContent = emoji;
+        // Auto-submit
+        setTimeout(() => document.getElementById('avatar-form').submit(), 300);
+    }
+</script>
 
 {% endblock %}

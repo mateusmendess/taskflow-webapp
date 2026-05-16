@@ -6,8 +6,14 @@
 
     <!-- Hero -->
     <div class="db-hero">
-        <h1>Bem-vindo de volta, {{ current_user.name.split()[0] }}! {{ current_user.avatar or '👋' }}</h1>
+        <h1>Dashboard TaskFlow</h1>
         <p>Gerencie suas tarefas com eficiência.</p>
+    </div>
+
+    <!-- Popup boas-vindas -->
+    <div class="welcome-popup" id="welcome-popup">
+        <span class="welcome-avatar">{{ current_user.avatar or current_user.name[0].upper() }}</span>
+        <span>Bem-vindo de volta, <strong>{{ current_user.name.split()[0] }}</strong>!</span>
     </div>
 
     <!-- Stats -->
@@ -484,6 +490,16 @@
             applyKanbanDashFilters();
         });
     });
+</script>
+
+<script>
+    // Popup boas-vindas
+    const welcomePopup = document.getElementById('welcome-popup');
+    if (welcomePopup) {
+        setTimeout(() => welcomePopup.classList.add('welcome-popup-show'), 300);
+        setTimeout(() => welcomePopup.classList.add('welcome-popup-hide'), 3500);
+        setTimeout(() => welcomePopup.remove(), 4000);
+    }
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>

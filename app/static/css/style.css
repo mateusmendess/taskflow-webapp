@@ -1512,3 +1512,166 @@ body.dark .kanban-card-prog {
     color: #fff;
     border-color: var(--tf-primary);
 }
+
+/* ── Avatar emoji ──────────────────────────────────────────── */
+.avatar-option {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--tf-surface-2);
+    border: 2px solid var(--tf-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    transition: border-color 0.18s, background 0.18s;
+    user-select: none;
+}
+
+.avatar-option:hover {
+    border-color: var(--tf-primary);
+    background: var(--tf-primary-bg);
+}
+
+.avatar-selected {
+    border-color: var(--tf-primary) !important;
+    background: var(--tf-primary-bg) !important;
+}
+
+input[type="radio"]:checked + .avatar-option {
+    border-color: var(--tf-primary);
+    background: var(--tf-primary-bg);
+}
+
+/* ── Avatar navbar ─────────────────────────────────────────── */
+.nav-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--tf-primary-bg);
+    border: 2px solid var(--tf-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    text-decoration: none;
+    transition: transform 0.18s, box-shadow 0.18s;
+    flex-shrink: 0;
+}
+
+.nav-avatar:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.2);
+}
+
+/* ── Avatar perfil ─────────────────────────────────────────── */
+.perfil-avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--tf-primary-bg);
+    border: 2.5px solid var(--tf-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    cursor: pointer;
+    transition: transform 0.18s, box-shadow 0.18s;
+    user-select: none;
+}
+
+.perfil-avatar:hover {
+    transform: scale(1.06);
+    box-shadow: 0 0 0 4px rgba(37,99,235,0.15);
+}
+
+.perfil-avatar-hint {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--tf-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    pointer-events: none;
+}
+
+/* ── Avatar picker ─────────────────────────────────────────── */
+.avatar-picker {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease, opacity 0.3s ease, margin 0.3s ease;
+    opacity: 0;
+    margin-bottom: 0;
+}
+
+.avatar-picker-open {
+    max-height: 200px;
+    opacity: 1;
+    margin-bottom: 20px;
+}
+
+.avatar-option {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: var(--tf-surface-2);
+    border: 2px solid var(--tf-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.7rem;
+    transition: border-color 0.18s, background 0.18s, transform 0.18s;
+    user-select: none;
+}
+
+.avatar-option:hover {
+    border-color: var(--tf-primary);
+    background: var(--tf-primary-bg);
+    transform: scale(1.1);
+}
+
+.avatar-selected {
+    border-color: var(--tf-primary) !important;
+    background: var(--tf-primary-bg) !important;
+}
+
+/* ── Welcome popup ─────────────────────────────────────────── */
+.welcome-popup {
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: #1f2937;
+    color: #f1f5f9;
+    padding: 12px 22px;
+    border-radius: 24px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    opacity: 0;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    white-space: nowrap;
+}
+
+.welcome-avatar {
+    font-size: 1.2rem;
+}
+
+.welcome-popup-show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.welcome-popup-hide {
+    opacity: 0;
+    transform: translateX(-50%) translateY(16px);
+}
