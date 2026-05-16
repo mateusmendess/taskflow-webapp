@@ -11,8 +11,9 @@ function updateKanbanCounts() {
 
 updateKanbanCounts();
 
-// ── SortableJS — drag and drop ──────────────────────────────────
+// ── SortableJS — drag and drop (apenas desktop no dashboard) ────
 function initKanban() {
+    const isMobile = window.innerWidth <= 768;
     const columns = ['pendente', 'em_progresso', 'concluída'];
 
     columns.forEach(status => {
@@ -25,6 +26,7 @@ function initKanban() {
             ghostClass: 'kanban-ghost',
             chosenClass: 'kanban-chosen',
             dragClass: 'kanban-dragging',
+            disabled: isMobile,
 
             onEnd: async function(evt) {
                 const card      = evt.item;
@@ -333,3 +335,53 @@ document.addEventListener('click', e => {
         document.querySelectorAll('.k-move-menu.open').forEach(m => m.classList.remove('open'));
     }
 });
+
+// ── Mover card na lista ─────────────────────────────────────────
+async function moveListCard(optionBtn, taskId, newStatus) {
+    const card    = optionBtn.closest('.task-card');
+    const menu    = card.querySelector('.k-move-menu');
+    const oldStatus = card.dataset.status;
+
+    menu.classList.remove('open');
+
+    card.dataset.status = newStatus;
+
+    // Atualiza classes visuais
+    card.classList.remove('completed-card', 'progress-card', 'overdue-card', 'warning-card');
+    if (newStatus === 'concluída')    card.classList.add('completed-card');
+    if (newStatus === 'em_progresso') card.classList.add('progress-card');
+
+    // Atualiza badge de status
+    const badge = card.querySelector('.tb-pend, .tb-done, .tb-progress');
+    if (badge) {
+        if (newStatus === 'concluída') {
+            badge.className = 'tb tb-done';
+            badge.innerText = '✓ Concluída';
+        } else if (newStatus === 'em_progresso') {
+            badge.className = 'tb tb-progress';
+            badge.innerText = '🔄 Em progresso';
+        } else {
+            badge.className = 'tb tb-pend';
+            badge.innerText = '⏳ Pendente';
+        }
+    }
+
+    // Remove botão concluir se foi para concluída
+    if (newStatus === 'concluída') {
+        const completeBtn = card.querySelector('.complete-btn');
+        if (completeBtn) completeBtn.remove();
+    }
+
+    try {
+        await fetch(`/task/${taskId}/update-status`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: newStatus })
+        });
+        showToast('Status atualizado!', 'success');
+        applyFilters();
+    } catch {
+        showToast('Erro de conexão.', 'error');
+        card.dataset.status = oldStatus;
+    }
+}

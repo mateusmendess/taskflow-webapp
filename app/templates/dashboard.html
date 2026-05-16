@@ -197,19 +197,6 @@
                                     {% endif %}
                                     <a href="{{ url_for('main.edit_task', task_id=task.id) }}" class="ta-btn ta-secondary">Editar</a>
                                     <a href="{{ url_for('main.delete_task', task_id=task.id) }}" class="ta-btn ta-danger">Excluir</a>
-                                    <button class="k-move-btn" onclick="toggleMoveMenu(this)">Mover ›</button>
-                                </div>
-                                <div class="k-move-menu">
-                                    <div class="k-move-menu-label">Mover para</div>
-                                    {% if task.status != 'pendente' %}
-                                        <button class="k-move-option" onclick="moveListCard(this, '{{ task.id }}', 'pendente')"><span class="k-move-dot pend"></span>Pendente</button>
-                                    {% endif %}
-                                    {% if task.status != 'em_progresso' %}
-                                        <button class="k-move-option" onclick="moveListCard(this, '{{ task.id }}', 'em_progresso')"><span class="k-move-dot prog"></span>Em progresso</button>
-                                    {% endif %}
-                                    {% if task.status != 'concluída' %}
-                                        <button class="k-move-option" onclick="moveListCard(this, '{{ task.id }}', 'concluída')"><span class="k-move-dot done"></span>Concluída</button>
-                                    {% endif %}
                                 </div>
 
                             </div>
