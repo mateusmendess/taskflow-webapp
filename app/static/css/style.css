@@ -1744,3 +1744,36 @@ input[type="date"].tf-input:not(:valid) {
     .task-card-expand-btn { display: none; }
     .task-card-desc-mobile { display: block !important; }
 }
+
+/* ── Kanban card descrição recolhível no mobile ────────────── */
+@media (max-width: 768px) {
+    .kanban-card .kanban-card-desc {
+        display: none;
+    }
+
+    .kanban-card.expanded .kanban-card-desc {
+        display: block;
+    }
+
+    .kanban-card-expand-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.7rem;
+        color: var(--tf-muted);
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        margin-bottom: 6px;
+        font-family: inherit;
+        font-weight: 600;
+    }
+
+    .kanban-card-expand-btn:hover { color: var(--tf-primary); }
+}
+
+@media (min-width: 769px) {
+    .kanban-card-expand-btn { display: none; }
+    .kanban-card .kanban-card-desc { display: -webkit-box !important; }
+}
