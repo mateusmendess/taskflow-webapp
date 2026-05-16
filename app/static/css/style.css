@@ -1429,7 +1429,7 @@ body.dark .kanban-card-prog {
 
 /* ── Kanban mobile move menu ───────────────────────────────── */
 .k-move-btn {
-    display: none;
+    display: inline-flex;
     padding: 5px 10px;
     border-radius: 7px;
     font-size: 0.75rem;
@@ -1502,5 +1502,5 @@ body.dark .kanban-card-prog {
 }
 
 @media (max-width: 768px) {
-    .k-move-btn { display: inline-flex; }
+    .k-move-btn { font-size: 0.72rem; padding: 5px 8px; }
 }
