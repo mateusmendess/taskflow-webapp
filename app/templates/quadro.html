@@ -15,14 +15,40 @@
             <span>💡 Arraste os cards entre as colunas para alterar o status das tarefas.</span>
         </div>
 
+        <!-- Filtros -->
+        <div class="db-filters" style="margin-bottom:16px;">
+
+            <label class="tf-label">Prioridade</label>
+            <div class="db-pills" id="qpriority-pills">
+                <button class="db-pill active-priority" data-priority="all">✓ Todas</button>
+                <button class="db-pill" data-priority="alta">🔺 Alta</button>
+                <button class="db-pill" data-priority="media">⚡ Média</button>
+                <button class="db-pill" data-priority="baixa">🌱 Baixa</button>
+            </div>
+
+            <div class="db-filter-hr"></div>
+
+            <label class="tf-label">Vencimento</label>
+            <div class="db-pills" id="qdeadline-pills">
+                <button class="db-pill active-deadline" data-deadline="all">✓ Todas</button>
+                <button class="db-pill" data-deadline="overdue">🕘 Atrasadas</button>
+                <button class="db-pill" data-deadline="today">📅 Hoje</button>
+                <button class="db-pill" data-deadline="future">➡️ Futuras</button>
+                <button class="db-pill" data-deadline="none">📂 Sem data</button>
+            </div>
+
+        </div>
+
         <!-- Busca -->
         <div class="kanban-search">
             <input type="text" id="kanban-search-input" class="tf-input"
-                placeholder="Pesquisar tarefa..." style="margin-bottom:0;"
-                oninput="filterKanban(this.value)">
+                placeholder="Pesquisar tarefa..." style="margin-bottom:0;">
         </div>
 
-        <div class="kanban-board">
+        <!-- Resultados da busca mobile -->
+        <div id="kanban-search-results" style="display:none; flex-direction:column; gap:10px; margin-top:12px;"></div>
+
+        <div class="kanban-board" style="margin-top:16px;">
 
             <!-- Coluna Pendente -->
             <div class="kanban-col">
@@ -36,11 +62,12 @@
                             <div class="kanban-card kanban-card-pend"
                                  data-id="{{ task.id }}"
                                  data-status="pendente"
+                                 data-priority="{{ task.priority }}"
+                                 data-due-date="{{ task.due_date }}"
+                                 data-today="{{ today }}"
                                  data-title="{{ task.title | lower }}">
                                 <div class="kanban-card-title">{{ task.title }}</div>
-                                {% if task.description %}
-                                    <div class="kanban-card-desc">{{ task.description }}</div>
-                                {% endif %}
+                                {% if task.description %}<div class="kanban-card-desc">{{ task.description }}</div>{% endif %}
                                 <div class="kanban-card-footer">
                                     {% if task.priority == "alta" %}<span class="tb tb-high">🔥 Alta</span>
                                     {% elif task.priority == "media" %}<span class="tb tb-medium">⚡ Média</span>
@@ -75,11 +102,12 @@
                             <div class="kanban-card kanban-card-prog"
                                  data-id="{{ task.id }}"
                                  data-status="em_progresso"
+                                 data-priority="{{ task.priority }}"
+                                 data-due-date="{{ task.due_date }}"
+                                 data-today="{{ today }}"
                                  data-title="{{ task.title | lower }}">
                                 <div class="kanban-card-title">{{ task.title }}</div>
-                                {% if task.description %}
-                                    <div class="kanban-card-desc">{{ task.description }}</div>
-                                {% endif %}
+                                {% if task.description %}<div class="kanban-card-desc">{{ task.description }}</div>{% endif %}
                                 <div class="kanban-card-footer">
                                     {% if task.priority == "alta" %}<span class="tb tb-high">🔥 Alta</span>
                                     {% elif task.priority == "media" %}<span class="tb tb-medium">⚡ Média</span>
@@ -114,11 +142,12 @@
                             <div class="kanban-card kanban-card-done"
                                  data-id="{{ task.id }}"
                                  data-status="concluída"
+                                 data-priority="{{ task.priority }}"
+                                 data-due-date="{{ task.due_date }}"
+                                 data-today="{{ today }}"
                                  data-title="{{ task.title | lower }}">
                                 <div class="kanban-card-title">{{ task.title }}</div>
-                                {% if task.description %}
-                                    <div class="kanban-card-desc">{{ task.description }}</div>
-                                {% endif %}
+                                {% if task.description %}<div class="kanban-card-desc">{{ task.description }}</div>{% endif %}
                                 <div class="kanban-card-footer">
                                     {% if task.priority == "alta" %}<span class="tb tb-high">🔥 Alta</span>
                                     {% elif task.priority == "media" %}<span class="tb tb-medium">⚡ Média</span>
@@ -146,6 +175,9 @@
 </div>
 
 <script>
+    let qPriority = 'all';
+    let qDeadline = 'all';
+
     function updateKanbanCounts() {
         ['pendente', 'em_progresso', 'concluída'].forEach(status => {
             const col   = document.getElementById('col-' + status);
@@ -156,9 +188,57 @@
 
     updateKanbanCounts();
 
+    function applyKanbanFilters() {
+        const query = (document.getElementById('kanban-search-input')?.value || '').toLowerCase();
+
+        document.querySelectorAll('.kanban-card').forEach(card => {
+            const title    = card.dataset.title || '';
+            const priority = card.dataset.priority || '';
+            const dueDate  = card.dataset.dueDate || '';
+            const today    = card.dataset.today || '';
+
+            const searchMatch   = title.includes(query);
+            const priorityMatch = qPriority === 'all' || priority === qPriority;
+
+            let deadlineMatch = true;
+            if (qDeadline === 'overdue') deadlineMatch = dueDate && dueDate < today;
+            else if (qDeadline === 'today')  deadlineMatch = dueDate === today;
+            else if (qDeadline === 'future') deadlineMatch = dueDate && dueDate > today;
+            else if (qDeadline === 'none')   deadlineMatch = !dueDate;
+
+            card.style.display = (searchMatch && priorityMatch && deadlineMatch) ? '' : 'none';
+        });
+
+        updateKanbanCounts();
+    }
+
+    // Filtros de prioridade
+    document.querySelectorAll('#qpriority-pills .db-pill').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('#qpriority-pills .db-pill').forEach(b => b.classList.remove('active-priority'));
+            btn.classList.add('active-priority');
+            qPriority = btn.dataset.priority;
+            applyKanbanFilters();
+        });
+    });
+
+    // Filtros de vencimento
+    document.querySelectorAll('#qdeadline-pills .db-pill').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('#qdeadline-pills .db-pill').forEach(b => b.classList.remove('active-deadline'));
+            btn.classList.add('active-deadline');
+            qDeadline = btn.dataset.deadline;
+            applyKanbanFilters();
+        });
+    });
+
     function showKanbanTip() {
         const tip = document.getElementById('kanban-tip');
         if (!tip) return;
+        const isMobile = window.innerWidth <= 768;
+        tip.querySelector('span').textContent = isMobile
+            ? '💡 Toque em "Mover ›" para mover as tarefas entre os status.'
+            : '💡 Arraste os cards entre as colunas para alterar o status das tarefas.';
         tip.classList.remove('kanban-tip-hide');
         tip.style.display = 'flex';
         setTimeout(() => {
@@ -169,42 +249,116 @@
 
     showKanbanTip();
 
-    // Busca
-    function filterKanban(query) {
-        const q = query.toLowerCase();
-        document.querySelectorAll('.kanban-card').forEach(card => {
-            const title = card.dataset.title || '';
-            card.style.display = title.includes(q) ? '' : 'none';
-        });
-        updateKanbanCounts();
+    // ── Busca com lista unificada no mobile ─────────────────────
+    const searchInput   = document.getElementById('kanban-search-input');
+    const searchResults = document.getElementById('kanban-search-results');
+    const kanbanBoard   = document.querySelector('.kanban-board');
+
+    function applyKanbanFilters() {
+        const query = (searchInput?.value || '').toLowerCase();
+        const isMobile = window.innerWidth <= 768;
+
+        // No mobile com busca ativa: modo lista unificada
+        if (isMobile && query.length > 0) {
+            kanbanBoard.style.display = 'none';
+            searchResults.style.display = 'flex';
+            searchResults.innerHTML = '';
+
+            let found = 0;
+            document.querySelectorAll('.kanban-card').forEach(card => {
+                const title    = card.dataset.title || '';
+                const priority = card.dataset.priority || '';
+                const dueDate  = card.dataset.dueDate || '';
+                const today    = card.dataset.today || '';
+                const priorityMatch = qPriority === 'all' || priority === qPriority;
+                let deadlineMatch = true;
+                if (qDeadline === 'overdue') deadlineMatch = dueDate && dueDate < today;
+                else if (qDeadline === 'today')  deadlineMatch = dueDate === today;
+                else if (qDeadline === 'future') deadlineMatch = dueDate && dueDate > today;
+                else if (qDeadline === 'none')   deadlineMatch = !dueDate;
+
+                if (title.includes(query) && priorityMatch && deadlineMatch) {
+                    const clone = card.cloneNode(true);
+                    clone.style.display = '';
+                    // Rebind move buttons
+                    clone.querySelectorAll('.k-move-btn').forEach(btn => {
+                        btn.onclick = function() { toggleMoveMenu(this); };
+                    });
+                    clone.querySelectorAll('.k-move-option').forEach(opt => {
+                        const status = opt.querySelector('.k-move-dot').classList[1] === 'pend' ? 'pendente'
+                            : opt.querySelector('.k-move-dot').classList[1] === 'prog' ? 'em_progresso' : 'concluída';
+                        opt.onclick = function() { moveCardMobile(this, status); };
+                    });
+                    searchResults.appendChild(clone);
+                    found++;
+                }
+            });
+
+            if (found === 0) {
+                searchResults.innerHTML = '<p style="color:var(--tf-muted);font-size:0.88rem;font-weight:600;text-align:center;padding:20px;">Nenhuma tarefa encontrada.</p>';
+            }
+        } else {
+            // Desktop ou sem busca: modo colunas normal
+            kanbanBoard.style.display = '';
+            searchResults.style.display = 'none';
+            searchResults.innerHTML = '';
+
+            document.querySelectorAll('.kanban-card').forEach(card => {
+                const title    = card.dataset.title || '';
+                const priority = card.dataset.priority || '';
+                const dueDate  = card.dataset.dueDate || '';
+                const today    = card.dataset.today || '';
+                const searchMatch   = title.includes(query);
+                const priorityMatch = qPriority === 'all' || priority === qPriority;
+                let deadlineMatch = true;
+                if (qDeadline === 'overdue') deadlineMatch = dueDate && dueDate < today;
+                else if (qDeadline === 'today')  deadlineMatch = dueDate === today;
+                else if (qDeadline === 'future') deadlineMatch = dueDate && dueDate > today;
+                else if (qDeadline === 'none')   deadlineMatch = !dueDate;
+                card.style.display = (searchMatch && priorityMatch && deadlineMatch) ? '' : 'none';
+            });
+            updateKanbanCounts();
+        }
     }
 
-    // Menu mobile
+    if (searchInput) searchInput.addEventListener('input', applyKanbanFilters);
+
+    document.querySelectorAll('#qpriority-pills .db-pill').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('#qpriority-pills .db-pill').forEach(b => b.classList.remove('active-priority'));
+            btn.classList.add('active-priority');
+            qPriority = btn.dataset.priority;
+            applyKanbanFilters();
+        });
+    });
+
+    document.querySelectorAll('#qdeadline-pills .db-pill').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('#qdeadline-pills .db-pill').forEach(b => b.classList.remove('active-deadline'));
+            btn.classList.add('active-deadline');
+            qDeadline = btn.dataset.deadline;
+            applyKanbanFilters();
+        });
+    });
+
     function toggleMoveMenu(btn) {
         const card = btn.closest('.kanban-card');
         const menu = card.querySelector('.k-move-menu');
-        // Fecha todos os outros menus
-        document.querySelectorAll('.k-move-menu.open').forEach(m => {
-            if (m !== menu) m.classList.remove('open');
-        });
+        document.querySelectorAll('.k-move-menu.open').forEach(m => { if (m !== menu) m.classList.remove('open'); });
         menu.classList.toggle('open');
     }
 
     async function moveCardMobile(optionBtn, newStatus) {
-        const card    = optionBtn.closest('.kanban-card');
-        const menu    = card.querySelector('.k-move-menu');
-        const taskId  = card.dataset.id;
+        const card      = optionBtn.closest('.kanban-card');
+        const menu      = card.querySelector('.k-move-menu');
+        const taskId    = card.dataset.id;
         const oldStatus = card.dataset.status;
-
         menu.classList.remove('open');
-
         const destCol = document.getElementById('col-' + newStatus);
         if (!destCol) return;
-
-        card.style.opacity   = '0';
+        card.style.opacity = '0';
         card.style.transform = 'scale(0.95)';
         card.style.transition = 'opacity 0.2s, transform 0.2s';
-
         setTimeout(() => {
             destCol.appendChild(card);
             card.dataset.status = newStatus;
@@ -212,12 +366,12 @@
             if (newStatus === 'concluída')    card.classList.add('kanban-card-done');
             if (newStatus === 'em_progresso') card.classList.add('kanban-card-prog');
             if (newStatus === 'pendente')     card.classList.add('kanban-card-pend');
-
-            card.style.opacity   = '1';
+            card.style.opacity = '1';
             card.style.transform = 'scale(1)';
             updateKanbanCounts();
+            // Limpa busca após mover
+            if (searchInput) { searchInput.value = ''; applyKanbanFilters(); }
         }, 200);
-
         try {
             await fetch(`/task/${taskId}/update-status`, {
                 method: 'POST',
@@ -225,12 +379,9 @@
                 body: JSON.stringify({ status: newStatus })
             });
             showToast('Tarefa movida!', 'success');
-        } catch {
-            showToast('Erro de conexão.', 'error');
-        }
+        } catch { showToast('Erro de conexão.', 'error'); }
     }
 
-    // Fecha menu ao clicar fora
     document.addEventListener('click', e => {
         if (!e.target.closest('.kanban-card')) {
             document.querySelectorAll('.k-move-menu.open').forEach(m => m.classList.remove('open'));
@@ -239,40 +390,39 @@
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
-
 <script>
-    ['pendente', 'em_progresso', 'concluída'].forEach(status => {
-        const col = document.getElementById('col-' + status);
-        if (!col) return;
-        Sortable.create(col, {
-            group: 'kanban',
-            animation: 150,
-            ghostClass: 'kanban-ghost',
-            chosenClass: 'kanban-chosen',
-            dragClass: 'kanban-dragging',
-            onEnd: async function(evt) {
-                const card      = evt.item;
-                const taskId    = card.dataset.id;
-                const newStatus = evt.to.id.replace('col-', '');
-                const oldStatus = card.dataset.status;
-                if (oldStatus === newStatus) return;
-                card.dataset.status = newStatus;
-                card.classList.remove('kanban-card-pend', 'kanban-card-prog', 'kanban-card-done');
-                if (newStatus === 'concluída')    card.classList.add('kanban-card-done');
-                if (newStatus === 'em_progresso') card.classList.add('kanban-card-prog');
-                if (newStatus === 'pendente')     card.classList.add('kanban-card-pend');
-                updateKanbanCounts();
-                try {
-                    await fetch(`/task/${taskId}/update-status`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ status: newStatus })
-                    });
-                    showToast('Tarefa movida!', 'success');
-                } catch { showToast('Erro de conexão.', 'error'); }
-            }
+    // Drag and drop apenas no desktop
+    const isMobileDevice = window.innerWidth <= 768;
+    if (!isMobileDevice) {
+        ['pendente', 'em_progresso', 'concluída'].forEach(status => {
+            const col = document.getElementById('col-' + status);
+            if (!col) return;
+            Sortable.create(col, {
+                group: 'kanban', animation: 150,
+                ghostClass: 'kanban-ghost', chosenClass: 'kanban-chosen', dragClass: 'kanban-dragging',
+                onEnd: async function(evt) {
+                    const card = evt.item;
+                    const taskId = card.dataset.id;
+                    const newStatus = evt.to.id.replace('col-', '');
+                    const oldStatus = card.dataset.status;
+                    if (oldStatus === newStatus) return;
+                    card.dataset.status = newStatus;
+                    card.classList.remove('kanban-card-pend', 'kanban-card-prog', 'kanban-card-done');
+                    if (newStatus === 'concluída')    card.classList.add('kanban-card-done');
+                    if (newStatus === 'em_progresso') card.classList.add('kanban-card-prog');
+                    if (newStatus === 'pendente')     card.classList.add('kanban-card-pend');
+                    updateKanbanCounts();
+                    try {
+                        await fetch(`/task/${taskId}/update-status`, {
+                            method: 'POST', headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ status: newStatus })
+                        });
+                        showToast('Tarefa movida!', 'success');
+                    } catch { showToast('Erro de conexão.', 'error'); }
+                }
+            });
         });
-    });
+    }
 
     function showToast(message, category) {
         const container = document.createElement('div');
