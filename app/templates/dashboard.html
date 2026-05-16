@@ -225,32 +225,8 @@
         <!-- ── VISTA KANBAN ── -->
         <div id="view-kanban" style="display:none;">
 
-            <div class="kanban-tip" id="kanban-tip">
-                <span>💡 Arraste os cards entre as colunas para alterar o status das tarefas.</span>
-            </div>
-
-            <!-- Filtros do quadro -->
-            <div class="db-filters" style="margin-bottom:16px;">
-
-                <label class="tf-label">Prioridade</label>
-                <div class="db-pills" id="kpriority-pills">
-                    <button class="db-pill active-kpriority" data-kpriority="all">✓ Todas</button>
-                    <button class="db-pill" data-kpriority="alta">🔺 Alta</button>
-                    <button class="db-pill" data-kpriority="media">⚡ Média</button>
-                    <button class="db-pill" data-kpriority="baixa">🌱 Baixa</button>
-                </div>
-
-                <div class="db-filter-hr"></div>
-
-                <label class="tf-label">Vencimento</label>
-                <div class="db-pills" id="kdeadline-pills">
-                    <button class="db-pill active-kdeadline" data-kdeadline="all">✓ Todas</button>
-                    <button class="db-pill" data-kdeadline="overdue">🕘 Atrasadas</button>
-                    <button class="db-pill" data-kdeadline="today">📅 Hoje</button>
-                    <button class="db-pill" data-kdeadline="future">➡️ Futuras</button>
-                    <button class="db-pill" data-kdeadline="none">📂 Sem data</button>
-                </div>
-
+            <div class="kanban-tip" id="kanban-tip" style="display:none;">
+                <span></span>
             </div>
 
             <div class="kanban-search">
@@ -445,21 +421,40 @@
     const _savedView = localStorage.getItem('tf-view');
     if (_savedView === 'kanban') switchView('kanban');
 
-    // Dica do Quadro — popup que some automaticamente
+    // Dica do Quadro
     function showKanbanTip() {
         const tip = document.getElementById('kanban-tip');
         if (!tip) return;
         const isMobile = window.innerWidth <= 768;
-        tip.querySelector('span').textContent = isMobile
-            ? '💡 Toque em "Mover ›" para mover as tarefas entre os status.'
-            : '💡 Arraste os cards entre as colunas para alterar o status das tarefas.';
-        tip.classList.remove('kanban-tip-hide');
-        tip.style.display = 'flex';
-        clearTimeout(window._kanbanTipTimer);
-        window._kanbanTipTimer = setTimeout(() => {
-            tip.classList.add('kanban-tip-hide');
-            setTimeout(() => { tip.style.display = 'none'; }, 500);
-        }, 4000);
+        if (isMobile) {
+            tip.querySelector('span').textContent = '💡 Toque em "Mover ›" para mover as tarefas entre os status.';
+            tip.classList.remove('kanban-tip-hide');
+            tip.style.display = 'flex';
+            clearTimeout(window._kanbanTipTimer);
+            window._kanbanTipTimer = setTimeout(() => {
+                tip.classList.add('kanban-tip-hide');
+                setTimeout(() => { tip.style.display = 'none'; }, 500);
+            }, 4000);
+        } else {
+            // Desktop: hover nos cards
+            tip.querySelector('span').textContent = '💡 Arraste os cards entre as colunas para alterar o status.';
+            setTimeout(() => {
+                document.querySelectorAll('#view-kanban .kanban-card').forEach(card => {
+                    card.addEventListener('mouseenter', () => {
+                        clearTimeout(window._kanbanTipTimer);
+                        tip.classList.remove('kanban-tip-hide');
+                        tip.style.display = 'flex';
+                    });
+                    card.addEventListener('mouseleave', () => {
+                        clearTimeout(window._kanbanTipTimer);
+                        window._kanbanTipTimer = setTimeout(() => {
+                            tip.classList.add('kanban-tip-hide');
+                            setTimeout(() => { tip.style.display = 'none'; tip.classList.remove('kanban-tip-hide'); }, 400);
+                        }, 300);
+                    });
+                });
+            }, 100);
+        }
     }
 
     // Busca e filtros no quadro do dashboard
