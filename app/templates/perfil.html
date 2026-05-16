@@ -63,6 +63,34 @@
 
     </div>
 
+    <!-- Card de notificações -->
+    <div class="db-card" style="margin-bottom: 20px;">
+
+        <div class="db-card-title">
+            <span class="db-card-icon">🔔</span>
+            Notificações por email
+        </div>
+
+        <form method="POST">
+            <input type="hidden" name="action" value="update_notifications">
+
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:16px; background:var(--tf-surface-2); border:1.5px solid var(--tf-border); border-radius:12px;">
+                <div>
+                    <div style="font-size:0.92rem; font-weight:700; color:var(--tf-text);">Resumo diário de tarefas</div>
+                    <div style="font-size:0.8rem; color:var(--tf-muted); margin-top:3px;">Receba um email às 8h quando tiver tarefas vencendo ou atrasadas</div>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" name="email_notifications"
+                        {% if current_user.email_notifications %}checked{% endif %}
+                        onchange="this.form.submit()">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+
+        </form>
+
+    </div>
+
     <!-- Card de senha -->
     <div class="db-card">
         <div class="db-card-title">

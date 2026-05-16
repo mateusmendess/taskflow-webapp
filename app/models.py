@@ -20,6 +20,8 @@ class User(UserMixin, db.Model):
 
     avatar = db.Column(db.String(10), default="🐱")
 
+    email_notifications = db.Column(db.Boolean, default=True)
+
     tasks = db.relationship("Task", backref="owner", lazy=True)
 
     def __repr__(self):
