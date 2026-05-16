@@ -1334,3 +1334,24 @@ body.dark .kanban-tip-close {
 @keyframes tipFadeOut {
     to { opacity: 0; transform: translateX(-50%) translateY(16px); }
 }
+
+/* ── Kanban card cores por status ──────────────────────────── */
+.kanban-card-pend {
+    background: #fffbeb !important;
+    border-color: #fde68a !important;
+}
+
+.kanban-card-prog {
+    background: #eff6ff !important;
+    border-color: #bfdbfe !important;
+}
+
+body.dark .kanban-card-pend {
+    background: #1a1200 !important;
+    border-color: #78350f !important;
+}
+
+body.dark .kanban-card-prog {
+    background: #1e3a5f !important;
+    border-color: #1d4ed8 !important;
+}

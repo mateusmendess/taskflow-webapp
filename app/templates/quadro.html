@@ -26,7 +26,7 @@
                 <div class="kanban-cards" id="col-pendente">
                     {% for task in tasks %}
                         {% if task.status == 'pendente' %}
-                            <div class="kanban-card" data-id="{{ task.id }}" data-status="pendente">
+                            <div class="kanban-card kanban-card-pend" data-id="{{ task.id }}" data-status="pendente">
                                 <div class="kanban-card-title">{{ task.title }}</div>
                                 {% if task.description %}
                                     <div class="kanban-card-desc">{{ task.description }}</div>
@@ -62,7 +62,7 @@
                 <div class="kanban-cards" id="col-em_progresso">
                     {% for task in tasks %}
                         {% if task.status == 'em_progresso' %}
-                            <div class="kanban-card" data-id="{{ task.id }}" data-status="em_progresso">
+                            <div class="kanban-card kanban-card-prog" data-id="{{ task.id }}" data-status="em_progresso">
                                 <div class="kanban-card-title">{{ task.title }}</div>
                                 {% if task.description %}
                                     <div class="kanban-card-desc">{{ task.description }}</div>
@@ -142,7 +142,6 @@
 
     updateKanbanCounts();
 
-    // Dica popup
     function showKanbanTip() {
         const tip = document.getElementById('kanban-tip');
         if (!tip) return;
@@ -180,7 +179,10 @@
                 if (oldStatus === newStatus) return;
 
                 card.dataset.status = newStatus;
-                card.classList.toggle('kanban-card-done', newStatus === 'concluída');
+                card.classList.remove('kanban-card-pend', 'kanban-card-prog', 'kanban-card-done');
+                if (newStatus === 'concluída')    card.classList.add('kanban-card-done');
+                if (newStatus === 'em_progresso') card.classList.add('kanban-card-prog');
+                if (newStatus === 'pendente')     card.classList.add('kanban-card-pend');
                 updateKanbanCounts();
 
                 try {
