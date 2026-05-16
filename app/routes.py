@@ -299,6 +299,12 @@ def update_task_status(task_id):
  
     return {"success": True, "status": new_status}, 200
 
+@main.route("/quadro")
+@login_required
+def quadro():
+    tasks = Task.query.filter_by(user_id=current_user.id).all()
+    return render_template("quadro.html", tasks=tasks)
+
 @main.route("/logout")
 @login_required
 def logout():

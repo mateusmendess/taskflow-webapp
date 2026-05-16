@@ -1,0 +1,219 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="db-page">
+
+    <div class="db-hero">
+        <h1>Quadro de Tarefas</h1>
+        <p>Visualize e mova suas tarefas entre os status.</p>
+    </div>
+
+    <div class="db-card">
+
+        <div class="kanban-tip" id="kanban-tip">
+            <span>💡 Arraste os cards entre as colunas para alterar o status das tarefas.</span>
+        </div>
+
+        <div class="kanban-board">
+
+            <!-- Coluna Pendente -->
+            <div class="kanban-col">
+                <div class="kanban-col-header kanban-pend">
+                    <span class="kanban-col-title">⏳ Pendente</span>
+                    <span class="kanban-col-count" id="count-pendente">0</span>
+                </div>
+                <div class="kanban-cards" id="col-pendente">
+                    {% for task in tasks %}
+                        {% if task.status == 'pendente' %}
+                            <div class="kanban-card" data-id="{{ task.id }}" data-status="pendente">
+                                <div class="kanban-card-title">{{ task.title }}</div>
+                                {% if task.description %}
+                                    <div class="kanban-card-desc">{{ task.description }}</div>
+                                {% endif %}
+                                <div class="kanban-card-footer">
+                                    {% if task.priority == "alta" %}
+                                        <span class="tb tb-high">🔥 Alta</span>
+                                    {% elif task.priority == "media" %}
+                                        <span class="tb tb-medium">⚡ Média</span>
+                                    {% else %}
+                                        <span class="tb tb-low">🌱 Baixa</span>
+                                    {% endif %}
+                                    {% if task.due_date %}
+                                        <span class="kanban-card-date">{{ task.due_date.strftime("%d/%m") }}</span>
+                                    {% endif %}
+                                </div>
+                                <div class="kanban-card-actions">
+                                    <a href="{{ url_for('main.edit_task', task_id=task.id) }}" class="ta-btn ta-secondary" style="font-size:0.72rem; padding:4px 10px;">Editar</a>
+                                    <a href="{{ url_for('main.delete_task', task_id=task.id) }}" class="ta-btn ta-danger" style="font-size:0.72rem; padding:4px 10px;">Excluir</a>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Coluna Em Progresso -->
+            <div class="kanban-col">
+                <div class="kanban-col-header kanban-prog">
+                    <span class="kanban-col-title">🔄 Em progresso</span>
+                    <span class="kanban-col-count" id="count-em_progresso">0</span>
+                </div>
+                <div class="kanban-cards" id="col-em_progresso">
+                    {% for task in tasks %}
+                        {% if task.status == 'em_progresso' %}
+                            <div class="kanban-card" data-id="{{ task.id }}" data-status="em_progresso">
+                                <div class="kanban-card-title">{{ task.title }}</div>
+                                {% if task.description %}
+                                    <div class="kanban-card-desc">{{ task.description }}</div>
+                                {% endif %}
+                                <div class="kanban-card-footer">
+                                    {% if task.priority == "alta" %}
+                                        <span class="tb tb-high">🔥 Alta</span>
+                                    {% elif task.priority == "media" %}
+                                        <span class="tb tb-medium">⚡ Média</span>
+                                    {% else %}
+                                        <span class="tb tb-low">🌱 Baixa</span>
+                                    {% endif %}
+                                    {% if task.due_date %}
+                                        <span class="kanban-card-date">{{ task.due_date.strftime("%d/%m") }}</span>
+                                    {% endif %}
+                                </div>
+                                <div class="kanban-card-actions">
+                                    <a href="{{ url_for('main.edit_task', task_id=task.id) }}" class="ta-btn ta-secondary" style="font-size:0.72rem; padding:4px 10px;">Editar</a>
+                                    <a href="{{ url_for('main.delete_task', task_id=task.id) }}" class="ta-btn ta-danger" style="font-size:0.72rem; padding:4px 10px;">Excluir</a>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Coluna Concluída -->
+            <div class="kanban-col">
+                <div class="kanban-col-header kanban-done">
+                    <span class="kanban-col-title">✅ Concluída</span>
+                    <span class="kanban-col-count" id="count-concluída">0</span>
+                </div>
+                <div class="kanban-cards" id="col-concluída">
+                    {% for task in tasks %}
+                        {% if task.status == 'concluída' %}
+                            <div class="kanban-card kanban-card-done" data-id="{{ task.id }}" data-status="concluída">
+                                <div class="kanban-card-title">{{ task.title }}</div>
+                                {% if task.description %}
+                                    <div class="kanban-card-desc">{{ task.description }}</div>
+                                {% endif %}
+                                <div class="kanban-card-footer">
+                                    {% if task.priority == "alta" %}
+                                        <span class="tb tb-high">🔥 Alta</span>
+                                    {% elif task.priority == "media" %}
+                                        <span class="tb tb-medium">⚡ Média</span>
+                                    {% else %}
+                                        <span class="tb tb-low">🌱 Baixa</span>
+                                    {% endif %}
+                                    {% if task.due_date %}
+                                        <span class="kanban-card-date">{{ task.due_date.strftime("%d/%m") }}</span>
+                                    {% endif %}
+                                </div>
+                                <div class="kanban-card-actions">
+                                    <a href="{{ url_for('main.edit_task', task_id=task.id) }}" class="ta-btn ta-secondary" style="font-size:0.72rem; padding:4px 10px;">Editar</a>
+                                    <a href="{{ url_for('main.delete_task', task_id=task.id) }}" class="ta-btn ta-danger" style="font-size:0.72rem; padding:4px 10px;">Excluir</a>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    function updateKanbanCounts() {
+        ['pendente', 'em_progresso', 'concluída'].forEach(status => {
+            const col   = document.getElementById('col-' + status);
+            const count = document.getElementById('count-' + status);
+            if (col && count) {
+                count.textContent = col.querySelectorAll('.kanban-card').length;
+            }
+        });
+    }
+
+    updateKanbanCounts();
+
+    // Dica popup
+    function showKanbanTip() {
+        const tip = document.getElementById('kanban-tip');
+        if (!tip) return;
+        tip.classList.remove('kanban-tip-hide');
+        tip.style.display = 'flex';
+        setTimeout(() => {
+            tip.classList.add('kanban-tip-hide');
+            setTimeout(() => { tip.style.display = 'none'; }, 500);
+        }, 4000);
+    }
+
+    showKanbanTip();
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+
+<script>
+    ['pendente', 'em_progresso', 'concluída'].forEach(status => {
+        const col = document.getElementById('col-' + status);
+        if (!col) return;
+
+        Sortable.create(col, {
+            group: 'kanban',
+            animation: 150,
+            ghostClass: 'kanban-ghost',
+            chosenClass: 'kanban-chosen',
+            dragClass: 'kanban-dragging',
+
+            onEnd: async function(evt) {
+                const card      = evt.item;
+                const taskId    = card.dataset.id;
+                const newStatus = evt.to.id.replace('col-', '');
+                const oldStatus = card.dataset.status;
+
+                if (oldStatus === newStatus) return;
+
+                card.dataset.status = newStatus;
+                card.classList.toggle('kanban-card-done', newStatus === 'concluída');
+                updateKanbanCounts();
+
+                try {
+                    const res = await fetch(`/task/${taskId}/update-status`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ status: newStatus })
+                    });
+
+                    if (!res.ok) {
+                        showToast('Erro ao mover tarefa.', 'error');
+                        card.dataset.status = oldStatus;
+                    } else {
+                        showToast('Tarefa movida!', 'success');
+                    }
+                } catch {
+                    showToast('Erro de conexão.', 'error');
+                    card.dataset.status = oldStatus;
+                }
+            }
+        });
+    });
+
+    function showToast(message, category) {
+        const container = document.createElement('div');
+        container.className = 'toast-container';
+        const toast = document.createElement('div');
+        toast.className = `toast ${category}`;
+        toast.innerText = message;
+        container.appendChild(toast);
+        document.body.appendChild(container);
+        setTimeout(() => container.remove(), 3500);
+    }
+</script>
+
+{% endblock %}

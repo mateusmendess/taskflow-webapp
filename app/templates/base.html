@@ -33,6 +33,7 @@
 
                 {% if current_user.is_authenticated %}
                     <a href="{{ url_for('main.dashboard') }}" class="nav-link">Dashboard</a>
+                    <a href="{{ url_for('main.quadro') }}" class="nav-link">Quadro</a>
                     <a href="{{ url_for('main.logout') }}" class="nav-link nav-link-logout">Logout</a>
                 {% else %}
                     <a href="{{ url_for('main.login') }}" class="nav-link">Login</a>
