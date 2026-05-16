@@ -508,24 +508,23 @@
             welcomePopup.remove();
         } else {
             sessionStorage.setItem('tf-welcomed', '1');
-            // No mobile: flash (3.5s) → tip mover (3.5s) → boas-vindas
-            // No desktop: boas-vindas logo
             const isMobile = window.innerWidth <= 768;
             if (isMobile) {
-                // Mostra tip "Toque para mover" após o flash sumir
-                setTimeout(() => {
-                    const tip = document.createElement('div');
-                    tip.className = 'welcome-popup';
-                    tip.innerHTML = '<span>💡 Toque em "Mover ›" para mover as tarefas entre os status.</span>';
-                    document.body.appendChild(tip);
-                    setTimeout(() => tip.classList.add('welcome-popup-show'), 50);
-                    setTimeout(() => tip.classList.add('welcome-popup-hide'), 3550);
-                    setTimeout(() => tip.remove(), 4050);
-                }, 3500);
-                // Boas-vindas após tip mover sumir
-                setTimeout(() => welcomePopup.classList.add('welcome-popup-show'), 7500);
-                setTimeout(() => welcomePopup.classList.add('welcome-popup-hide'), 10500);
-                setTimeout(() => welcomePopup.remove(), 11000);
+                // Mostra tip "Toque em Mover" embaixo junto com o flash
+                const tipEl = document.getElementById('kanban-tip');
+                if (tipEl) {
+                    tipEl.querySelector('span').textContent = '💡 Toque em "Mover ›" para mover as tarefas entre os status.';
+                    tipEl.classList.remove('kanban-tip-hide');
+                    tipEl.style.display = 'flex';
+                    setTimeout(() => {
+                        tipEl.classList.add('kanban-tip-hide');
+                        setTimeout(() => { tipEl.style.display = 'none'; tipEl.classList.remove('kanban-tip-hide'); }, 500);
+                    }, 3500);
+                }
+                // Boas-vindas aparece após os dois sumirem
+                setTimeout(() => welcomePopup.classList.add('welcome-popup-show'), 3500);
+                setTimeout(() => welcomePopup.classList.add('welcome-popup-hide'), 6500);
+                setTimeout(() => welcomePopup.remove(), 7000);
             } else {
                 setTimeout(() => welcomePopup.classList.add('welcome-popup-show'), 300);
                 setTimeout(() => welcomePopup.classList.add('welcome-popup-hide'), 3300);
