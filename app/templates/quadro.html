@@ -15,6 +15,13 @@
             <span>💡 Arraste os cards entre as colunas para alterar o status das tarefas.</span>
         </div>
 
+        <!-- Busca -->
+        <div class="kanban-search">
+            <input type="text" id="kanban-search-input" class="tf-input"
+                placeholder="Pesquisar tarefa..." style="margin-bottom:0;"
+                oninput="filterKanban(this.value)">
+        </div>
+
         <div class="kanban-board">
 
             <!-- Coluna Pendente -->
@@ -26,26 +33,29 @@
                 <div class="kanban-cards" id="col-pendente">
                     {% for task in tasks %}
                         {% if task.status == 'pendente' %}
-                            <div class="kanban-card kanban-card-pend" data-id="{{ task.id }}" data-status="pendente">
+                            <div class="kanban-card kanban-card-pend"
+                                 data-id="{{ task.id }}"
+                                 data-status="pendente"
+                                 data-title="{{ task.title | lower }}">
                                 <div class="kanban-card-title">{{ task.title }}</div>
                                 {% if task.description %}
                                     <div class="kanban-card-desc">{{ task.description }}</div>
                                 {% endif %}
                                 <div class="kanban-card-footer">
-                                    {% if task.priority == "alta" %}
-                                        <span class="tb tb-high">🔥 Alta</span>
-                                    {% elif task.priority == "media" %}
-                                        <span class="tb tb-medium">⚡ Média</span>
-                                    {% else %}
-                                        <span class="tb tb-low">🌱 Baixa</span>
-                                    {% endif %}
-                                    {% if task.due_date %}
-                                        <span class="kanban-card-date">{{ task.due_date.strftime("%d/%m") }}</span>
-                                    {% endif %}
+                                    {% if task.priority == "alta" %}<span class="tb tb-high">🔥 Alta</span>
+                                    {% elif task.priority == "media" %}<span class="tb tb-medium">⚡ Média</span>
+                                    {% else %}<span class="tb tb-low">🌱 Baixa</span>{% endif %}
+                                    {% if task.due_date %}<span class="kanban-card-date">{{ task.due_date.strftime("%d/%m") }}</span>{% endif %}
                                 </div>
                                 <div class="kanban-card-actions">
                                     <a href="{{ url_for('main.edit_task', task_id=task.id) }}" class="ta-btn ta-secondary" style="font-size:0.72rem; padding:4px 10px;">Editar</a>
                                     <a href="{{ url_for('main.delete_task', task_id=task.id) }}" class="ta-btn ta-danger" style="font-size:0.72rem; padding:4px 10px;">Excluir</a>
+                                    <button class="k-move-btn" onclick="toggleMoveMenu(this)">Mover ›</button>
+                                </div>
+                                <div class="k-move-menu">
+                                    <div class="k-move-menu-label">Mover para</div>
+                                    <button class="k-move-option" onclick="moveCardMobile(this, 'em_progresso')"><span class="k-move-dot prog"></span>Em progresso</button>
+                                    <button class="k-move-option" onclick="moveCardMobile(this, 'concluída')"><span class="k-move-dot done"></span>Concluída</button>
                                 </div>
                             </div>
                         {% endif %}
@@ -62,26 +72,29 @@
                 <div class="kanban-cards" id="col-em_progresso">
                     {% for task in tasks %}
                         {% if task.status == 'em_progresso' %}
-                            <div class="kanban-card kanban-card-prog" data-id="{{ task.id }}" data-status="em_progresso">
+                            <div class="kanban-card kanban-card-prog"
+                                 data-id="{{ task.id }}"
+                                 data-status="em_progresso"
+                                 data-title="{{ task.title | lower }}">
                                 <div class="kanban-card-title">{{ task.title }}</div>
                                 {% if task.description %}
                                     <div class="kanban-card-desc">{{ task.description }}</div>
                                 {% endif %}
                                 <div class="kanban-card-footer">
-                                    {% if task.priority == "alta" %}
-                                        <span class="tb tb-high">🔥 Alta</span>
-                                    {% elif task.priority == "media" %}
-                                        <span class="tb tb-medium">⚡ Média</span>
-                                    {% else %}
-                                        <span class="tb tb-low">🌱 Baixa</span>
-                                    {% endif %}
-                                    {% if task.due_date %}
-                                        <span class="kanban-card-date">{{ task.due_date.strftime("%d/%m") }}</span>
-                                    {% endif %}
+                                    {% if task.priority == "alta" %}<span class="tb tb-high">🔥 Alta</span>
+                                    {% elif task.priority == "media" %}<span class="tb tb-medium">⚡ Média</span>
+                                    {% else %}<span class="tb tb-low">🌱 Baixa</span>{% endif %}
+                                    {% if task.due_date %}<span class="kanban-card-date">{{ task.due_date.strftime("%d/%m") }}</span>{% endif %}
                                 </div>
                                 <div class="kanban-card-actions">
                                     <a href="{{ url_for('main.edit_task', task_id=task.id) }}" class="ta-btn ta-secondary" style="font-size:0.72rem; padding:4px 10px;">Editar</a>
                                     <a href="{{ url_for('main.delete_task', task_id=task.id) }}" class="ta-btn ta-danger" style="font-size:0.72rem; padding:4px 10px;">Excluir</a>
+                                    <button class="k-move-btn" onclick="toggleMoveMenu(this)">Mover ›</button>
+                                </div>
+                                <div class="k-move-menu">
+                                    <div class="k-move-menu-label">Mover para</div>
+                                    <button class="k-move-option" onclick="moveCardMobile(this, 'pendente')"><span class="k-move-dot pend"></span>Pendente</button>
+                                    <button class="k-move-option" onclick="moveCardMobile(this, 'concluída')"><span class="k-move-dot done"></span>Concluída</button>
                                 </div>
                             </div>
                         {% endif %}
@@ -98,26 +111,29 @@
                 <div class="kanban-cards" id="col-concluída">
                     {% for task in tasks %}
                         {% if task.status == 'concluída' %}
-                            <div class="kanban-card kanban-card-done" data-id="{{ task.id }}" data-status="concluída">
+                            <div class="kanban-card kanban-card-done"
+                                 data-id="{{ task.id }}"
+                                 data-status="concluída"
+                                 data-title="{{ task.title | lower }}">
                                 <div class="kanban-card-title">{{ task.title }}</div>
                                 {% if task.description %}
                                     <div class="kanban-card-desc">{{ task.description }}</div>
                                 {% endif %}
                                 <div class="kanban-card-footer">
-                                    {% if task.priority == "alta" %}
-                                        <span class="tb tb-high">🔥 Alta</span>
-                                    {% elif task.priority == "media" %}
-                                        <span class="tb tb-medium">⚡ Média</span>
-                                    {% else %}
-                                        <span class="tb tb-low">🌱 Baixa</span>
-                                    {% endif %}
-                                    {% if task.due_date %}
-                                        <span class="kanban-card-date">{{ task.due_date.strftime("%d/%m") }}</span>
-                                    {% endif %}
+                                    {% if task.priority == "alta" %}<span class="tb tb-high">🔥 Alta</span>
+                                    {% elif task.priority == "media" %}<span class="tb tb-medium">⚡ Média</span>
+                                    {% else %}<span class="tb tb-low">🌱 Baixa</span>{% endif %}
+                                    {% if task.due_date %}<span class="kanban-card-date">{{ task.due_date.strftime("%d/%m") }}</span>{% endif %}
                                 </div>
                                 <div class="kanban-card-actions">
                                     <a href="{{ url_for('main.edit_task', task_id=task.id) }}" class="ta-btn ta-secondary" style="font-size:0.72rem; padding:4px 10px;">Editar</a>
                                     <a href="{{ url_for('main.delete_task', task_id=task.id) }}" class="ta-btn ta-danger" style="font-size:0.72rem; padding:4px 10px;">Excluir</a>
+                                    <button class="k-move-btn" onclick="toggleMoveMenu(this)">Mover ›</button>
+                                </div>
+                                <div class="k-move-menu">
+                                    <div class="k-move-menu-label">Mover para</div>
+                                    <button class="k-move-option" onclick="moveCardMobile(this, 'pendente')"><span class="k-move-dot pend"></span>Pendente</button>
+                                    <button class="k-move-option" onclick="moveCardMobile(this, 'em_progresso')"><span class="k-move-dot prog"></span>Em progresso</button>
                                 </div>
                             </div>
                         {% endif %}
@@ -134,9 +150,7 @@
         ['pendente', 'em_progresso', 'concluída'].forEach(status => {
             const col   = document.getElementById('col-' + status);
             const count = document.getElementById('count-' + status);
-            if (col && count) {
-                count.textContent = col.querySelectorAll('.kanban-card').length;
-            }
+            if (col && count) count.textContent = col.querySelectorAll('.kanban-card:not([style*="display: none"])').length;
         });
     }
 
@@ -154,6 +168,74 @@
     }
 
     showKanbanTip();
+
+    // Busca
+    function filterKanban(query) {
+        const q = query.toLowerCase();
+        document.querySelectorAll('.kanban-card').forEach(card => {
+            const title = card.dataset.title || '';
+            card.style.display = title.includes(q) ? '' : 'none';
+        });
+        updateKanbanCounts();
+    }
+
+    // Menu mobile
+    function toggleMoveMenu(btn) {
+        const card = btn.closest('.kanban-card');
+        const menu = card.querySelector('.k-move-menu');
+        // Fecha todos os outros menus
+        document.querySelectorAll('.k-move-menu.open').forEach(m => {
+            if (m !== menu) m.classList.remove('open');
+        });
+        menu.classList.toggle('open');
+    }
+
+    async function moveCardMobile(optionBtn, newStatus) {
+        const card    = optionBtn.closest('.kanban-card');
+        const menu    = card.querySelector('.k-move-menu');
+        const taskId  = card.dataset.id;
+        const oldStatus = card.dataset.status;
+
+        menu.classList.remove('open');
+
+        const destCol = document.getElementById('col-' + newStatus);
+        if (!destCol) return;
+
+        card.style.opacity   = '0';
+        card.style.transform = 'scale(0.95)';
+        card.style.transition = 'opacity 0.2s, transform 0.2s';
+
+        setTimeout(() => {
+            destCol.appendChild(card);
+            card.dataset.status = newStatus;
+            card.classList.remove('kanban-card-pend', 'kanban-card-prog', 'kanban-card-done');
+            if (newStatus === 'concluída')    card.classList.add('kanban-card-done');
+            if (newStatus === 'em_progresso') card.classList.add('kanban-card-prog');
+            if (newStatus === 'pendente')     card.classList.add('kanban-card-pend');
+
+            card.style.opacity   = '1';
+            card.style.transform = 'scale(1)';
+            updateKanbanCounts();
+        }, 200);
+
+        try {
+            await fetch(`/task/${taskId}/update-status`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: newStatus })
+            });
+            showToast('Tarefa movida!', 'success');
+        } catch {
+            showToast('Erro de conexão.', 'error');
+        }
+    }
+
+    // Fecha menu ao clicar fora
+    document.addEventListener('click', e => {
+        if (!e.target.closest('.kanban-card')) {
+            document.querySelectorAll('.k-move-menu.open').forEach(m => m.classList.remove('open'));
+        }
+    });
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
@@ -162,46 +244,32 @@
     ['pendente', 'em_progresso', 'concluída'].forEach(status => {
         const col = document.getElementById('col-' + status);
         if (!col) return;
-
         Sortable.create(col, {
             group: 'kanban',
             animation: 150,
             ghostClass: 'kanban-ghost',
             chosenClass: 'kanban-chosen',
             dragClass: 'kanban-dragging',
-
             onEnd: async function(evt) {
                 const card      = evt.item;
                 const taskId    = card.dataset.id;
                 const newStatus = evt.to.id.replace('col-', '');
                 const oldStatus = card.dataset.status;
-
                 if (oldStatus === newStatus) return;
-
                 card.dataset.status = newStatus;
                 card.classList.remove('kanban-card-pend', 'kanban-card-prog', 'kanban-card-done');
                 if (newStatus === 'concluída')    card.classList.add('kanban-card-done');
                 if (newStatus === 'em_progresso') card.classList.add('kanban-card-prog');
                 if (newStatus === 'pendente')     card.classList.add('kanban-card-pend');
                 updateKanbanCounts();
-
                 try {
-                    const res = await fetch(`/task/${taskId}/update-status`, {
+                    await fetch(`/task/${taskId}/update-status`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ status: newStatus })
                     });
-
-                    if (!res.ok) {
-                        showToast('Erro ao mover tarefa.', 'error');
-                        card.dataset.status = oldStatus;
-                    } else {
-                        showToast('Tarefa movida!', 'success');
-                    }
-                } catch {
-                    showToast('Erro de conexão.', 'error');
-                    card.dataset.status = oldStatus;
-                }
+                    showToast('Tarefa movida!', 'success');
+                } catch { showToast('Erro de conexão.', 'error'); }
             }
         });
     });

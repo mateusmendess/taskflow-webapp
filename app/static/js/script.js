@@ -278,3 +278,58 @@ function showToast(message, category) {
 
     setTimeout(() => container.remove(), 3500);
 }
+
+// ── Kanban mobile move menu ─────────────────────────────────────
+function toggleMoveMenu(btn) {
+    const card = btn.closest('.kanban-card');
+    const menu = card.querySelector('.k-move-menu');
+    document.querySelectorAll('.k-move-menu.open').forEach(m => {
+        if (m !== menu) m.classList.remove('open');
+    });
+    menu.classList.toggle('open');
+}
+
+async function moveCardMobile(optionBtn, newStatus) {
+    const card      = optionBtn.closest('.kanban-card');
+    const menu      = card.querySelector('.k-move-menu');
+    const taskId    = card.dataset.id;
+    const oldStatus = card.dataset.status;
+
+    menu.classList.remove('open');
+
+    const destCol = document.getElementById('col-' + newStatus);
+    if (!destCol) return;
+
+    card.style.opacity    = '0';
+    card.style.transform  = 'scale(0.95)';
+    card.style.transition = 'opacity 0.2s, transform 0.2s';
+
+    setTimeout(() => {
+        destCol.appendChild(card);
+        card.dataset.status = newStatus;
+        card.classList.remove('kanban-card-pend', 'kanban-card-prog', 'kanban-card-done');
+        if (newStatus === 'concluída')    card.classList.add('kanban-card-done');
+        if (newStatus === 'em_progresso') card.classList.add('kanban-card-prog');
+        if (newStatus === 'pendente')     card.classList.add('kanban-card-pend');
+        if (typeof updateKanbanCounts === 'function') updateKanbanCounts();
+        card.style.opacity   = '1';
+        card.style.transform = 'scale(1)';
+    }, 200);
+
+    try {
+        await fetch(`/task/${taskId}/update-status`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: newStatus })
+        });
+        showToast('Tarefa movida!', 'success');
+    } catch {
+        showToast('Erro de conexão.', 'error');
+    }
+}
+
+document.addEventListener('click', e => {
+    if (!e.target.closest('.kanban-card')) {
+        document.querySelectorAll('.k-move-menu.open').forEach(m => m.classList.remove('open'));
+    }
+});

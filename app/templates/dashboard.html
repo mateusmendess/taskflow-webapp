@@ -122,7 +122,7 @@
 
             </div>
 
-            <!-- Busca e Ordenação -->
+        <!-- Busca e Ordenação -->
             <div class="db-search-sort">
                 <input type="text" id="search-input" class="tf-input" placeholder="Pesquisar tarefa...">
                 <select id="sort-select" class="tf-input">
@@ -216,6 +216,12 @@
                 <span>💡 Arraste os cards entre as colunas para alterar o status das tarefas.</span>
             </div>
 
+            <div class="kanban-search">
+                <input type="text" class="tf-input" placeholder="Pesquisar tarefa..."
+                    style="margin-bottom:0;"
+                    oninput="filterKanbanDash(this.value)">
+            </div>
+
             <div class="kanban-board">
 
                 <!-- Coluna Pendente -->
@@ -252,6 +258,12 @@
                                     <div class="kanban-card-actions">
                                         <a href="{{ url_for('main.edit_task', task_id=task.id) }}" class="ta-btn ta-secondary" style="font-size:0.72rem; padding:4px 10px;">Editar</a>
                                         <a href="{{ url_for('main.delete_task', task_id=task.id) }}" class="ta-btn ta-danger" style="font-size:0.72rem; padding:4px 10px;">Excluir</a>
+                                        <button class="k-move-btn" onclick="toggleMoveMenu(this)">Mover ›</button>
+                                    </div>
+                                    <div class="k-move-menu">
+                                        <div class="k-move-menu-label">Mover para</div>
+                                        <button class="k-move-option" onclick="moveCardMobile(this, 'em_progresso')"><span class="k-move-dot prog"></span>Em progresso</button>
+                                        <button class="k-move-option" onclick="moveCardMobile(this, 'concluída')"><span class="k-move-dot done"></span>Concluída</button>
                                     </div>
                                 </div>
                             {% endif %}
@@ -293,6 +305,12 @@
                                     <div class="kanban-card-actions">
                                         <a href="{{ url_for('main.edit_task', task_id=task.id) }}" class="ta-btn ta-secondary" style="font-size:0.72rem; padding:4px 10px;">Editar</a>
                                         <a href="{{ url_for('main.delete_task', task_id=task.id) }}" class="ta-btn ta-danger" style="font-size:0.72rem; padding:4px 10px;">Excluir</a>
+                                        <button class="k-move-btn" onclick="toggleMoveMenu(this)">Mover ›</button>
+                                    </div>
+                                    <div class="k-move-menu">
+                                        <div class="k-move-menu-label">Mover para</div>
+                                        <button class="k-move-option" onclick="moveCardMobile(this, 'pendente')"><span class="k-move-dot pend"></span>Pendente</button>
+                                        <button class="k-move-option" onclick="moveCardMobile(this, 'concluída')"><span class="k-move-dot done"></span>Concluída</button>
                                     </div>
                                 </div>
                             {% endif %}
@@ -334,6 +352,12 @@
                                     <div class="kanban-card-actions">
                                         <a href="{{ url_for('main.edit_task', task_id=task.id) }}" class="ta-btn ta-secondary" style="font-size:0.72rem; padding:4px 10px;">Editar</a>
                                         <a href="{{ url_for('main.delete_task', task_id=task.id) }}" class="ta-btn ta-danger" style="font-size:0.72rem; padding:4px 10px;">Excluir</a>
+                                        <button class="k-move-btn" onclick="toggleMoveMenu(this)">Mover ›</button>
+                                    </div>
+                                    <div class="k-move-menu">
+                                        <div class="k-move-menu-label">Mover para</div>
+                                        <button class="k-move-option" onclick="moveCardMobile(this, 'pendente')"><span class="k-move-dot pend"></span>Pendente</button>
+                                        <button class="k-move-option" onclick="moveCardMobile(this, 'em_progresso')"><span class="k-move-dot prog"></span>Em progresso</button>
                                     </div>
                                 </div>
                             {% endif %}
@@ -386,6 +410,15 @@
             tip.classList.add('kanban-tip-hide');
             setTimeout(() => { tip.style.display = 'none'; }, 500);
         }, 4000);
+    }
+
+    // Busca no quadro do dashboard
+    function filterKanbanDash(query) {
+        const q = query.toLowerCase();
+        document.querySelectorAll('#view-kanban .kanban-card').forEach(card => {
+            const title = (card.querySelector('.kanban-card-title')?.textContent || '').toLowerCase();
+            card.style.display = title.includes(q) ? '' : 'none';
+        });
     }
 </script>
 

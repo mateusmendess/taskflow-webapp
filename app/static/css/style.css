@@ -1426,3 +1426,81 @@ body.dark .kanban-card-prog {
         grid-template-columns: 1fr;
     }
 }
+
+/* ── Kanban mobile move menu ───────────────────────────────── */
+.k-move-btn {
+    display: none;
+    padding: 5px 10px;
+    border-radius: 7px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    font-family: inherit;
+    background: var(--tf-primary);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.k-move-btn:hover { background: var(--tf-primary-d); }
+
+.k-move-menu {
+    display: none;
+    background: var(--tf-surface);
+    border: 1.5px solid var(--tf-border);
+    border-radius: 10px;
+    padding: 6px;
+    margin-top: 8px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+}
+
+.k-move-menu.open { display: block; }
+
+.k-move-menu-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--tf-muted);
+    padding: 4px 8px 6px;
+}
+
+.k-move-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 10px;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--tf-text);
+    cursor: pointer;
+    transition: background 0.15s;
+    border: none;
+    background: transparent;
+    width: 100%;
+    font-family: inherit;
+    text-align: left;
+}
+
+.k-move-option:hover { background: var(--tf-surface-2); }
+
+.k-move-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.k-move-dot.pend { background: #f59e0b; }
+.k-move-dot.prog { background: #3b82f6; }
+.k-move-dot.done { background: #22c55e; }
+
+/* Busca no quadro */
+.kanban-search {
+    margin-bottom: 16px;
+}
+
+@media (max-width: 768px) {
+    .k-move-btn { display: inline-flex; }
+}
