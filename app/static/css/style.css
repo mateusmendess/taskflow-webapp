@@ -1559,6 +1559,15 @@ input[type="radio"]:checked + .avatar-option {
     flex-shrink: 0;
 }
 
+@media (max-width: 768px) {
+    .nav-avatar {
+        width: 34px;
+        height: 34px;
+        font-size: 1.1rem;
+        margin-left: 8px !important;
+    }
+}
+
 .nav-avatar:hover {
     transform: scale(1.1);
     box-shadow: 0 0 0 3px rgba(37,99,235,0.2);

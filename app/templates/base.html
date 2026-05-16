@@ -48,7 +48,7 @@
             </button>
 
             {% if current_user.is_authenticated %}
-                <a href="{{ url_for('main.perfil') }}" class="nav-avatar" title="Meu perfil" style="margin-left: 16px;">
+                <a href="{{ url_for('main.perfil') }}" class="nav-avatar" title="Meu perfil" style="margin-left: 20px;">
                     {{ current_user.avatar or current_user.name[0].upper() }}
                 </a>
             {% endif %}
