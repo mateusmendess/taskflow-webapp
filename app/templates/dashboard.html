@@ -211,6 +211,12 @@
 
         <!-- ── VISTA KANBAN ── -->
         <div id="view-kanban" style="display:none;">
+
+            <div class="kanban-tip" id="kanban-tip">
+                💡 Arraste os cards entre as colunas para mover as tarefas.
+                <button onclick="dismissTip()" class="kanban-tip-close">✕</button>
+            </div>
+
             <div class="kanban-board">
 
                 <!-- Coluna Pendente -->
@@ -362,12 +368,21 @@
             btnKanban.classList.add('active');
             localStorage.setItem('tf-view', 'kanban');
             if (typeof updateKanbanCounts === 'function') updateKanbanCounts();
+            // Mostra a dica sempre que abrir o quadro
+            const tip = document.getElementById('kanban-tip');
+            if (tip) tip.style.display = 'flex';
         }
     }
 
     // Restaura vista salva antes de qualquer renderização
     const _savedView = localStorage.getItem('tf-view');
     if (_savedView === 'kanban') switchView('kanban');
+
+    // Dica do Kanban — fecha ao clicar no X
+    function dismissTip() {
+        const tip = document.getElementById('kanban-tip');
+        if (tip) tip.style.display = 'none';
+    }
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
