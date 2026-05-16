@@ -501,12 +501,24 @@
 </script>
 
 <script>
-    // Popup boas-vindas
+    // Popup boas-vindas — só aparece uma vez por sessão (após login)
     const welcomePopup = document.getElementById('welcome-popup');
     if (welcomePopup) {
-        setTimeout(() => welcomePopup.classList.add('welcome-popup-show'), 300);
-        setTimeout(() => welcomePopup.classList.add('welcome-popup-hide'), 3500);
-        setTimeout(() => welcomePopup.remove(), 4000);
+        if (sessionStorage.getItem('tf-welcomed')) {
+            welcomePopup.remove();
+        } else {
+            sessionStorage.setItem('tf-welcomed', '1');
+            setTimeout(() => welcomePopup.classList.add('welcome-popup-show'), 300);
+            setTimeout(() => welcomePopup.classList.add('welcome-popup-hide'), 3500);
+            setTimeout(() => welcomePopup.remove(), 4000);
+        }
+    }
+
+    // toggleKanbanDesc disponível antes do script.js carregar
+    function toggleKanbanDesc(btn) {
+        const card = btn.closest('.kanban-card');
+        const isExpanded = card.classList.toggle('expanded');
+        btn.textContent = isExpanded ? '▴ Ocultar descrição' : '▾ Ver descrição';
     }
 </script>
 

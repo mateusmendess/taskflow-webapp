@@ -130,6 +130,13 @@
                 hamburger.classList.remove('is-open');
             });
         });
+
+        // Limpa sessão ao fazer logout
+        document.querySelectorAll('a[href*="logout"]').forEach(link => {
+            link.addEventListener('click', () => {
+                sessionStorage.removeItem('tf-welcomed');
+            });
+        });
     </script>
 
 </body>
