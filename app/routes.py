@@ -427,8 +427,11 @@ def perfil_update():
 def test_email():
     from .email_service import send_daily_digest
     from flask import current_app
-    send_daily_digest(current_app._get_current_object())
-    flash("Email de teste enviado!", "success")
+    try:
+        send_daily_digest(current_app._get_current_object())
+        flash("Email de teste enviado!", "success")
+    except Exception as e:
+        flash(f"Erro ao enviar email: {str(e)}", "error")
     return redirect(url_for("main.dashboard"))
 
 @main.route("/logout")
