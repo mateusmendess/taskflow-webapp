@@ -38,6 +38,36 @@ function initKanban() {
                 card.classList.toggle('kanban-card-done', newStatus === 'concluída');
                 updateKanbanCounts();
 
+                // Sincroniza o card na vista de lista
+                const listCard = document.querySelector(`.task-card[data-id="${taskId}"]`);
+                if (listCard) {
+                    listCard.dataset.status = newStatus;
+
+                    listCard.classList.remove('completed-card', 'progress-card', 'overdue-card', 'warning-card');
+                    if (newStatus === 'concluída')   listCard.classList.add('completed-card');
+                    if (newStatus === 'em_progresso') listCard.classList.add('progress-card');
+
+                    const badge = listCard.querySelector('.tb-pend, .tb-done, .tb-progress');
+                    if (badge) {
+                        if (newStatus === 'concluída') {
+                            badge.className = 'tb tb-done';
+                            badge.innerText = '✓ Concluída';
+                        } else if (newStatus === 'em_progresso') {
+                            badge.className = 'tb tb-progress';
+                            badge.innerText = '🔄 Em progresso';
+                        } else {
+                            badge.className = 'tb tb-pend';
+                            badge.innerText = '⏳ Pendente';
+                        }
+                    }
+
+                    // Remove botão concluir se foi para concluída
+                    if (newStatus === 'concluída') {
+                        const completeBtn = listCard.querySelector('.complete-btn');
+                        if (completeBtn) completeBtn.remove();
+                    }
+                }
+
                 try {
                     const res = await fetch(`/task/${taskId}/update-status`, {
                         method: 'POST',
