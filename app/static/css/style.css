@@ -747,3 +747,92 @@ textarea.tf-input { resize: vertical; }
     box-shadow: 0 10px 30px rgba(0,0,0,0.08);
     transition: background 0.3s, border-color 0.3s;
 }
+
+
+
+/* ── Responsividade ────────────────────────────────────────── */
+
+/* Tablet (até 768px) */
+@media (max-width: 768px) {
+
+    /* Navbar */
+    .navbar {
+        padding: 12px 20px;
+        flex-wrap: wrap;
+        height: auto;
+        gap: 10px;
+    }
+
+    .navbar-nav {
+        width: 100%;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+        gap: 4px;
+    }
+
+    .nav-link {
+        font-size: 0.82rem;
+        padding: 6px 10px;
+    }
+
+    /* Dashboard */
+    .db-page { padding: 24px 16px 40px; }
+
+    .db-stats { grid-template-columns: repeat(2, 1fr); }
+
+    .db-card { padding: 20px 16px; }
+
+    .db-row { grid-template-columns: 1fr; }
+
+    .db-search-sort { grid-template-columns: 1fr; }
+
+    .db-tasks-grid { grid-template-columns: 1fr; }
+
+    .db-filters { padding: 16px; }
+
+    .db-pills { gap: 6px; }
+
+    .db-pill { font-size: 0.75rem; padding: 5px 10px; }
+
+    /* Auth */
+    .auth-card { padding: 28px 20px; }
+    .edit-card { padding: 28px 20px; }
+
+    /* Home */
+    .home-card { padding: 36px 24px; }
+    .home-title { font-size: 1.6rem; }
+}
+
+/* Mobile (até 480px) */
+@media (max-width: 480px) {
+
+    /* Navbar */
+    .navbar-brand { font-size: 1rem; }
+    .navbar-brand-icon { width: 26px; height: 26px; font-size: 0.8rem; }
+
+    /* Stats */
+    .db-stats { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .db-stat { padding: 14px 12px; }
+    .db-stat-num { font-size: 1.6rem; }
+
+    /* Cards */
+    .db-card-title { font-size: 0.9rem; }
+
+    /* Task card */
+    .task-card { padding: 14px; }
+    .task-card h3 { font-size: 0.9rem; }
+    .ta-btn { padding: 6px 10px; font-size: 0.75rem; }
+
+    /* Home */
+    .home-card { padding: 28px 16px; border-radius: 16px; }
+    .home-title { font-size: 1.4rem; }
+    .home-sub { font-size: 0.9rem; }
+
+    /* Auth */
+    .auth-card { padding: 24px 16px; border-radius: 16px; }
+    .auth-title { font-size: 1.4rem; }
+    .edit-card { padding: 24px 16px; }
+
+    /* Filtros */
+    .db-filter-hr { margin: 10px 0; }
+}
