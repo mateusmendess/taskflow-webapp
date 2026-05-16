@@ -1504,3 +1504,11 @@ body.dark .kanban-card-prog {
 @media (max-width: 768px) {
     .k-move-btn { font-size: 0.72rem; padding: 5px 8px; }
 }
+
+/* ── Filtros ativos do quadro dashboard ────────────────────── */
+.db-pill.active-kpriority,
+.db-pill.active-kdeadline {
+    background: var(--tf-primary);
+    color: #fff;
+    border-color: var(--tf-primary);
+}

@@ -18,6 +18,8 @@ class User(UserMixin, db.Model):
 
     password = db.Column(db.String(200), nullable=False)
 
+    avatar = db.Column(db.String(10), default="🐱")
+
     tasks = db.relationship("Task", backref="owner", lazy=True)
 
     def __repr__(self):
