@@ -392,6 +392,36 @@ def analytics():
         week_data=week_data
     )
 
+@main.route("/perfil/update", methods=["POST"])
+@login_required
+def perfil_update():
+    from flask import jsonify
+    data   = request.get_json()
+    action = data.get("action")
+
+    if action == "update_avatar":
+        avatar = data.get("avatar")
+        if avatar not in ['🐱', '🐶', '🦊', '🐼', '🐸']:
+            return jsonify({"error": "Avatar inválido."}), 400
+        current_user.avatar = avatar
+        db.session.commit()
+        return jsonify({"success": True})
+
+    elif action == "update_name":
+        name = data.get("name", "").strip()
+        if not name:
+            return jsonify({"error": "Nome não pode ser vazio."}), 400
+        current_user.name = name
+        db.session.commit()
+        return jsonify({"success": True})
+
+    elif action == "update_notifications":
+        current_user.email_notifications = data.get("email_notifications", True)
+        db.session.commit()
+        return jsonify({"success": True})
+
+    return jsonify({"error": "Ação inválida."}), 400
+
 @main.route("/logout")
 @login_required
 def logout():

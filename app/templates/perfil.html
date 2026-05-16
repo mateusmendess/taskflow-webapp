@@ -18,7 +18,6 @@
         </div>
 
         <div style="display:flex; align-items:center; gap:20px; padding:16px; background:var(--tf-surface-2); border:1.5px solid var(--tf-border); border-radius:12px; margin-bottom:24px;">
-            <!-- Avatar clicável -->
             <div style="position:relative; flex-shrink:0;">
                 <div class="perfil-avatar" id="perfil-avatar" onclick="toggleAvatarPicker()" title="Clique para trocar">
                     {{ current_user.avatar or current_user.name[0].upper() }}
@@ -26,7 +25,7 @@
                 <div class="perfil-avatar-hint">✏️</div>
             </div>
             <div>
-                <div style="font-size:1rem; font-weight:700; color:var(--tf-text);">{{ current_user.name }}</div>
+                <div style="font-size:1rem; font-weight:700; color:var(--tf-text);" id="perfil-name-display">{{ current_user.name }}</div>
                 <div style="font-size:0.85rem; color:var(--tf-muted);">{{ current_user.email }}</div>
                 <div style="font-size:0.78rem; color:var(--tf-primary); margin-top:4px; cursor:pointer;" onclick="toggleAvatarPicker()">Trocar avatar</div>
             </div>
@@ -35,60 +34,43 @@
         <!-- Avatar picker inline -->
         <div class="avatar-picker" id="avatar-picker">
             <label class="tf-label">Escolha seu avatar</label>
-            <form method="POST" id="avatar-form">
-                <input type="hidden" name="action" value="update_avatar">
-                <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:16px;">
-                    {% for emoji in ['🐱', '🐶', '🦊', '🐼', '🐸'] %}
-                        <label style="cursor:pointer;" onclick="selectAvatar('{{ emoji }}', this)">
-                            <input type="radio" name="avatar" value="{{ emoji }}"
-                                {% if (current_user.avatar or '🐱') == emoji %}checked{% endif %}
-                                style="display:none;">
-                            <div class="avatar-option {% if (current_user.avatar or '🐱') == emoji %}avatar-selected{% endif %}">
-                                {{ emoji }}
-                            </div>
-                        </label>
-                    {% endfor %}
-                </div>
-                <button type="submit" class="tf-btn-primary">Salvar avatar</button>
-            </form>
+            <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:16px;">
+                {% for emoji in ['🐱', '🐶', '🦊', '🐼', '🐸'] %}
+                    <label style="cursor:pointer;" onclick="selectAvatar('{{ emoji }}', this)">
+                        <div class="avatar-option {% if (current_user.avatar or '🐱') == emoji %}avatar-selected{% endif %}" data-emoji="{{ emoji }}">
+                            {{ emoji }}
+                        </div>
+                    </label>
+                {% endfor %}
+            </div>
+            <button onclick="saveAvatar()" class="tf-btn-primary">Salvar avatar</button>
         </div>
 
         <!-- Editar nome -->
-        <form method="POST">
-            <input type="hidden" name="action" value="update_name">
-            <label class="tf-label">Nome</label>
-            <input type="text" name="name" class="tf-input" value="{{ current_user.name }}" required>
-            <button type="submit" class="tf-btn-primary">Salvar nome</button>
-        </form>
+        <label class="tf-label">Nome</label>
+        <input type="text" id="name-input" class="tf-input" value="{{ current_user.name }}" required>
+        <button onclick="saveName()" class="tf-btn-primary">Salvar nome</button>
 
     </div>
 
     <!-- Card de notificações -->
     <div class="db-card" style="margin-bottom: 20px;">
-
         <div class="db-card-title">
             <span class="db-card-icon">🔔</span>
             Notificações por email
         </div>
-
-        <form method="POST">
-            <input type="hidden" name="action" value="update_notifications">
-
-            <div style="display:flex; align-items:center; justify-content:space-between; padding:16px; background:var(--tf-surface-2); border:1.5px solid var(--tf-border); border-radius:12px;">
-                <div>
-                    <div style="font-size:0.92rem; font-weight:700; color:var(--tf-text);">Resumo diário de tarefas</div>
-                    <div style="font-size:0.8rem; color:var(--tf-muted); margin-top:3px;">Receba um email às 8h apenas nos dias em que tiver tarefas vencendo hoje, amanhã ou atrasadas</div>
-                </div>
-                <label class="toggle-switch">
-                    <input type="checkbox" name="email_notifications"
-                        {% if current_user.email_notifications %}checked{% endif %}
-                        onchange="this.form.submit()">
-                    <span class="toggle-slider"></span>
-                </label>
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:16px; background:var(--tf-surface-2); border:1.5px solid var(--tf-border); border-radius:12px;">
+            <div>
+                <div style="font-size:0.92rem; font-weight:700; color:var(--tf-text);">Resumo diário de tarefas</div>
+                <div style="font-size:0.8rem; color:var(--tf-muted); margin-top:3px;">Receba um email às 8h apenas nos dias em que tiver tarefas vencendo hoje, amanhã ou atrasadas</div>
             </div>
-
-        </form>
-
+            <label class="toggle-switch">
+                <input type="checkbox" id="notifications-toggle"
+                    {% if current_user.email_notifications %}checked{% endif %}
+                    onchange="saveNotifications(this.checked)">
+                <span class="toggle-slider"></span>
+            </label>
+        </div>
     </div>
 
     <!-- Card de senha -->
@@ -112,15 +94,74 @@
 </div>
 
 <script>
+    let selectedAvatar = '{{ current_user.avatar or "🐱" }}';
+
     function toggleAvatarPicker() {
-        const picker = document.getElementById('avatar-picker');
-        picker.classList.toggle('avatar-picker-open');
+        document.getElementById('avatar-picker').classList.toggle('avatar-picker-open');
     }
 
     function selectAvatar(emoji, label) {
         document.querySelectorAll('.avatar-option').forEach(o => o.classList.remove('avatar-selected'));
         label.querySelector('.avatar-option').classList.add('avatar-selected');
         document.getElementById('perfil-avatar').textContent = emoji;
+        selectedAvatar = emoji;
+    }
+
+    async function saveAvatar() {
+        const res = await fetch('/perfil/update', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'update_avatar', avatar: selectedAvatar })
+        });
+        const data = await res.json();
+        if (data.success) {
+            showToast('Avatar atualizado!', 'success');
+            document.getElementById('avatar-picker').classList.remove('avatar-picker-open');
+        } else {
+            showToast(data.error || 'Erro ao salvar.', 'error');
+        }
+    }
+
+    async function saveName() {
+        const name = document.getElementById('name-input').value.trim();
+        if (!name) return showToast('Nome não pode ser vazio.', 'error');
+        const res = await fetch('/perfil/update', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'update_name', name })
+        });
+        const data = await res.json();
+        if (data.success) {
+            document.getElementById('perfil-name-display').textContent = name;
+            showToast('Nome atualizado!', 'success');
+        } else {
+            showToast(data.error || 'Erro ao salvar.', 'error');
+        }
+    }
+
+    async function saveNotifications(checked) {
+        const res = await fetch('/perfil/update', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'update_notifications', email_notifications: checked })
+        });
+        const data = await res.json();
+        if (data.success) {
+            showToast(checked ? 'Notificações ativadas!' : 'Notificações desativadas!', 'success');
+        } else {
+            showToast(data.error || 'Erro ao salvar.', 'error');
+        }
+    }
+
+    function showToast(message, category) {
+        const container = document.createElement('div');
+        container.className = 'toast-container';
+        const toast = document.createElement('div');
+        toast.className = `toast ${category}`;
+        toast.innerText = message;
+        container.appendChild(toast);
+        document.body.appendChild(container);
+        setTimeout(() => container.remove(), 3500);
     }
 </script>
 
