@@ -68,137 +68,281 @@
 
     <!-- Minhas Tarefas -->
     <div class="db-card">
-        <div class="db-card-title">
-            <span class="db-card-icon">☑</span>
-            Minhas Tarefas
-        </div>
-
-        <!-- Filtros -->
-        <div class="db-filters">
-
-            <label class="tf-label">Status</label>
-            <div class="db-pills">
-                <button class="db-pill filter-btn active-filter" data-filter="all">✓ Todas</button>
-                <button class="db-pill filter-btn" data-filter="pending">⏱ Pendentes</button>
-                <button class="db-pill filter-btn" data-filter="completed">✅ Concluídas</button>
+        <div class="db-card-title" style="justify-content: space-between;">
+            <div style="display:flex; align-items:center; gap:8px;">
+                <span class="db-card-icon">☑</span>
+                Minhas Tarefas
             </div>
 
-            <div class="db-filter-hr"></div>
-
-            <label class="tf-label">Prioridade</label>
-            <div class="db-pills">
-                <button class="db-pill priority-filter-btn active-priority" data-priority="all">✓ Todas</button>
-                <button class="db-pill priority-filter-btn" data-priority="alta">🔺 Alta</button>
-                <button class="db-pill priority-filter-btn" data-priority="media">⚡ Média</button>
-                <button class="db-pill priority-filter-btn" data-priority="baixa">🌱 Baixa</button>
+            <!-- Toggle Lista / Kanban -->
+            <div class="view-toggle">
+                <button class="view-btn active" id="btn-list" onclick="switchView('list')">
+                    ☰ Lista
+                </button>
+                <button class="view-btn" id="btn-kanban" onclick="switchView('kanban')">
+                    ⬛ Kanban
+                </button>
             </div>
-
-            <div class="db-filter-hr"></div>
-
-            <label class="tf-label">Vencimento</label>
-            <div class="db-pills">
-                <button class="db-pill deadline-filter-btn active-deadline" data-deadline="all">✓ Todas</button>
-                <button class="db-pill deadline-filter-btn" data-deadline="overdue">🕘 Atrasadas</button>
-                <button class="db-pill deadline-filter-btn" data-deadline="today">📅 Hoje</button>
-                <button class="db-pill deadline-filter-btn" data-deadline="future">➡️ Futuras</button>
-                <button class="db-pill deadline-filter-btn" data-deadline="none">📂 Sem data</button>
-            </div>
-
         </div>
 
-        <!-- Busca e Ordenação -->
-        <div class="db-search-sort">
-            <input type="text" id="search-input" class="tf-input" placeholder="Pesquisar tarefa...">
-            <select id="sort-select" class="tf-input">
-                <option value="none">Ordenar por...</option>
-                <option value="important">⭐ Mais importantes</option>
-                <option value="due_date">📅 Vencimento próximo</option>
-                <option value="priority">🔺 Prioridade alta</option>
-                <option value="newest">🆕 Mais recentes</option>
-                <option value="oldest">🕰️ Mais antigas</option>
-            </select>
-        </div>
+        <!-- ── VISTA LISTA ── -->
+        <div id="view-list">
 
-        {% if tasks %}
+            <!-- Filtros -->
+            <div class="db-filters">
 
-            <p id="empty-filter-message">Nenhuma tarefa disponível.</p>
+                <label class="tf-label">Status</label>
+                <div class="db-pills">
+                    <button class="db-pill filter-btn active-filter" data-filter="all">✓ Todas</button>
+                    <button class="db-pill filter-btn" data-filter="pending">⏱ Pendentes</button>
+                    <button class="db-pill filter-btn" data-filter="progress">🔄 Em progresso</button>
+                    <button class="db-pill filter-btn" data-filter="completed">✅ Concluídas</button>
+                </div>
 
-            <div class="db-tasks-bg">
-                <div class="db-tasks-grid">
+                <div class="db-filter-hr"></div>
 
-                    {% for task in tasks %}
-                        <div class="task-card
-                            {% if task.status == 'concluída' %}completed-card
-                            {% elif task.status != 'pendente' %}completed-card
-                            {% elif task.due_date and task.due_date < today %}overdue-card
-                            {% elif task.due_date and task.due_date|string == today|string %}warning-card
-                            {% endif %}"
-                            data-id="{{ task.id }}"
-                            data-status="{{ task.status }}"
-                            data-priority="{{ task.priority }}"
-                            data-title="{{ task.title | lower }}"
-                            data-description="{{ task.description | lower }}"
-                            data-due-date="{{ task.due_date }}"
-                            data-created-at="{{ task.created_at }}"
-                            data-today="{{ today }}"
-                            data-overdue="{% if task.due_date and task.due_date < today and task.status != 'concluída' %}true{% else %}false{% endif %}"
-                        >
-                            <h3>{{ task.title }}</h3>
-                            <p>{{ task.description }}</p>
+                <label class="tf-label">Prioridade</label>
+                <div class="db-pills">
+                    <button class="db-pill priority-filter-btn active-priority" data-priority="all">✓ Todas</button>
+                    <button class="db-pill priority-filter-btn" data-priority="alta">🔺 Alta</button>
+                    <button class="db-pill priority-filter-btn" data-priority="media">⚡ Média</button>
+                    <button class="db-pill priority-filter-btn" data-priority="baixa">🌱 Baixa</button>
+                </div>
 
-                            <div class="task-badges">
-                                {% if task.status == "concluída" %}
-                                    <span class="tb tb-done">✓ Concluída</span>
-                                {% else %}
-                                    <span class="tb tb-pend">⏳ Pendente</span>
-                                {% endif %}
+                <div class="db-filter-hr"></div>
 
-                                {% if task.priority == "alta" %}
-                                    <span class="tb tb-high">🔥 Alta</span>
-                                {% elif task.priority == "media" %}
-                                    <span class="tb tb-medium">⚡ Média</span>
-                                {% else %}
-                                    <span class="tb tb-low">🌱 Baixa</span>
-                                {% endif %}
-                            </div>
+                <label class="tf-label">Vencimento</label>
+                <div class="db-pills">
+                    <button class="db-pill deadline-filter-btn active-deadline" data-deadline="all">✓ Todas</button>
+                    <button class="db-pill deadline-filter-btn" data-deadline="overdue">🕘 Atrasadas</button>
+                    <button class="db-pill deadline-filter-btn" data-deadline="today">📅 Hoje</button>
+                    <button class="db-pill deadline-filter-btn" data-deadline="future">➡️ Futuras</button>
+                    <button class="db-pill deadline-filter-btn" data-deadline="none">📂 Sem data</button>
+                </div>
 
-                            {% if task.due_date %}
-                                <div class="task-due">
-                                    {% if task.status == "concluída" %}✅
-                                    {% elif task.due_date < today %}⚠️
-                                    {% elif task.due_date|string == today|string %}⏰
-                                    {% else %}🗓️
+            </div>
+
+            <!-- Busca e Ordenação -->
+            <div class="db-search-sort">
+                <input type="text" id="search-input" class="tf-input" placeholder="Pesquisar tarefa...">
+                <select id="sort-select" class="tf-input">
+                    <option value="none">Ordenar por...</option>
+                    <option value="important">⭐ Mais importantes</option>
+                    <option value="due_date">📅 Vencimento próximo</option>
+                    <option value="priority">🔺 Prioridade alta</option>
+                    <option value="newest">🆕 Mais recentes</option>
+                    <option value="oldest">🕰️ Mais antigas</option>
+                </select>
+            </div>
+
+            {% if tasks %}
+                <p id="empty-filter-message">Nenhuma tarefa disponível.</p>
+                <div class="db-tasks-bg">
+                    <div class="db-tasks-grid">
+                        {% for task in tasks %}
+                            <div class="task-card
+                                {% if task.status == 'concluída' %}completed-card
+                                {% elif task.status == 'em_progresso' %}progress-card
+                                {% elif task.due_date and task.due_date < today %}overdue-card
+                                {% elif task.due_date and task.due_date|string == today|string %}warning-card
+                                {% endif %}"
+                                data-id="{{ task.id }}"
+                                data-status="{{ task.status }}"
+                                data-priority="{{ task.priority }}"
+                                data-title="{{ task.title | lower }}"
+                                data-description="{{ task.description | lower }}"
+                                data-due-date="{{ task.due_date }}"
+                                data-created-at="{{ task.created_at }}"
+                                data-today="{{ today }}"
+                                data-overdue="{% if task.due_date and task.due_date < today and task.status != 'concluída' %}true{% else %}false{% endif %}"
+                            >
+                                <h3>{{ task.title }}</h3>
+                                <p>{{ task.description }}</p>
+
+                                <div class="task-badges">
+                                    {% if task.status == "concluída" %}
+                                        <span class="tb tb-done">✓ Concluída</span>
+                                    {% elif task.status == "em_progresso" %}
+                                        <span class="tb tb-progress">🔄 Em progresso</span>
+                                    {% else %}
+                                        <span class="tb tb-pend">⏳ Pendente</span>
                                     {% endif %}
-                                    Vencimento: {{ task.due_date.strftime("%d/%m/%Y") }}
+
+                                    {% if task.priority == "alta" %}
+                                        <span class="tb tb-high">🔥 Alta</span>
+                                    {% elif task.priority == "media" %}
+                                        <span class="tb tb-medium">⚡ Média</span>
+                                    {% else %}
+                                        <span class="tb tb-low">🌱 Baixa</span>
+                                    {% endif %}
+                                </div>
+
+                                {% if task.due_date %}
+                                    <div class="task-due">
+                                        {% if task.status == "concluída" %}✅
+                                        {% elif task.due_date < today %}⚠️
+                                        {% elif task.due_date|string == today|string %}⏰
+                                        {% else %}🗓️
+                                        {% endif %}
+                                        Vencimento: {{ task.due_date.strftime("%d/%m/%Y") }}
+                                    </div>
+                                {% endif %}
+
+                                <div class="task-actions">
+                                    {% if task.status != "concluída" %}
+                                        <button type="button" class="ta-btn ta-primary complete-btn"
+                                            data-url="{{ url_for('main.complete_task', task_id=task.id) }}">
+                                            Concluir
+                                        </button>
+                                    {% endif %}
+                                    <a href="{{ url_for('main.edit_task', task_id=task.id) }}" class="ta-btn ta-secondary">Editar</a>
+                                    <a href="{{ url_for('main.delete_task', task_id=task.id) }}" class="ta-btn ta-danger">Excluir</a>
+                                </div>
+
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% else %}
+                <div class="db-empty">Nenhuma tarefa cadastrada.<br>Crie sua primeira tarefa acima!</div>
+            {% endif %}
+
+        </div>
+
+        <!-- ── VISTA KANBAN ── -->
+        <div id="view-kanban" style="display:none;">
+            <div class="kanban-board">
+
+                <!-- Coluna Pendente -->
+                <div class="kanban-col" data-status="pendente">
+                    <div class="kanban-col-header kanban-pend">
+                        <span class="kanban-col-title">⏳ Pendente</span>
+                        <span class="kanban-col-count" id="count-pendente">0</span>
+                    </div>
+                    <div class="kanban-cards" id="col-pendente"
+                         
+                         >
+                        {% for task in tasks %}
+                            {% if task.status == 'pendente' %}
+                                <div class="kanban-card" 
+                                     data-id="{{ task.id }}"
+                                     data-status="pendente"
+                                     >
+                                    <div class="kanban-card-title">{{ task.title }}</div>
+                                    {% if task.description %}
+                                        <div class="kanban-card-desc">{{ task.description }}</div>
+                                    {% endif %}
+                                    <div class="kanban-card-footer">
+                                        {% if task.priority == "alta" %}
+                                            <span class="tb tb-high">🔥 Alta</span>
+                                        {% elif task.priority == "media" %}
+                                            <span class="tb tb-medium">⚡ Média</span>
+                                        {% else %}
+                                            <span class="tb tb-low">🌱 Baixa</span>
+                                        {% endif %}
+                                        {% if task.due_date %}
+                                            <span class="kanban-card-date">{{ task.due_date.strftime("%d/%m") }}</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="kanban-card-actions">
+                                        <a href="{{ url_for('main.edit_task', task_id=task.id) }}" class="ta-btn ta-secondary" style="font-size:0.72rem; padding:4px 10px;">Editar</a>
+                                        <a href="{{ url_for('main.delete_task', task_id=task.id) }}" class="ta-btn ta-danger" style="font-size:0.72rem; padding:4px 10px;">Excluir</a>
+                                    </div>
                                 </div>
                             {% endif %}
-
-                            <div class="task-actions">
-                                {% if task.status != "concluída" %}
-                                    <button type="button" class="ta-btn ta-primary complete-btn"
-                                        data-url="{{ url_for('main.complete_task', task_id=task.id) }}">
-                                        Concluir
-                                    </button>
-                                {% endif %}
-                                <a href="{{ url_for('main.edit_task', task_id=task.id) }}" class="ta-btn ta-secondary">Editar</a>
-                                <a href="{{ url_for('main.delete_task', task_id=task.id) }}" class="ta-btn ta-danger">Excluir</a>
-                            </div>
-
-                        </div>
-                    {% endfor %}
-
+                        {% endfor %}
+                    </div>
                 </div>
-            </div>
 
-        {% else %}
-            <div class="db-empty">
-                Nenhuma tarefa cadastrada.<br>Crie sua primeira tarefa acima!
+                <!-- Coluna Em Progresso -->
+                <div class="kanban-col" data-status="em_progresso">
+                    <div class="kanban-col-header kanban-prog">
+                        <span class="kanban-col-title">🔄 Em progresso</span>
+                        <span class="kanban-col-count" id="count-em_progresso">0</span>
+                    </div>
+                    <div class="kanban-cards" id="col-em_progresso"
+                         
+                         >
+                        {% for task in tasks %}
+                            {% if task.status == 'em_progresso' %}
+                                <div class="kanban-card" 
+                                     data-id="{{ task.id }}"
+                                     data-status="em_progresso"
+                                     >
+                                    <div class="kanban-card-title">{{ task.title }}</div>
+                                    {% if task.description %}
+                                        <div class="kanban-card-desc">{{ task.description }}</div>
+                                    {% endif %}
+                                    <div class="kanban-card-footer">
+                                        {% if task.priority == "alta" %}
+                                            <span class="tb tb-high">🔥 Alta</span>
+                                        {% elif task.priority == "media" %}
+                                            <span class="tb tb-medium">⚡ Média</span>
+                                        {% else %}
+                                            <span class="tb tb-low">🌱 Baixa</span>
+                                        {% endif %}
+                                        {% if task.due_date %}
+                                            <span class="kanban-card-date">{{ task.due_date.strftime("%d/%m") }}</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="kanban-card-actions">
+                                        <a href="{{ url_for('main.edit_task', task_id=task.id) }}" class="ta-btn ta-secondary" style="font-size:0.72rem; padding:4px 10px;">Editar</a>
+                                        <a href="{{ url_for('main.delete_task', task_id=task.id) }}" class="ta-btn ta-danger" style="font-size:0.72rem; padding:4px 10px;">Excluir</a>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Coluna Concluída -->
+                <div class="kanban-col" data-status="concluída">
+                    <div class="kanban-col-header kanban-done">
+                        <span class="kanban-col-title">✅ Concluída</span>
+                        <span class="kanban-col-count" id="count-concluída">0</span>
+                    </div>
+                    <div class="kanban-cards" id="col-concluída"
+                         
+                         >
+                        {% for task in tasks %}
+                            {% if task.status == 'concluída' %}
+                                <div class="kanban-card kanban-card-done" 
+                                     data-id="{{ task.id }}"
+                                     data-status="concluída"
+                                     >
+                                    <div class="kanban-card-title">{{ task.title }}</div>
+                                    {% if task.description %}
+                                        <div class="kanban-card-desc">{{ task.description }}</div>
+                                    {% endif %}
+                                    <div class="kanban-card-footer">
+                                        {% if task.priority == "alta" %}
+                                            <span class="tb tb-high">🔥 Alta</span>
+                                        {% elif task.priority == "media" %}
+                                            <span class="tb tb-medium">⚡ Média</span>
+                                        {% else %}
+                                            <span class="tb tb-low">🌱 Baixa</span>
+                                        {% endif %}
+                                        {% if task.due_date %}
+                                            <span class="kanban-card-date">{{ task.due_date.strftime("%d/%m") }}</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="kanban-card-actions">
+                                        <a href="{{ url_for('main.edit_task', task_id=task.id) }}" class="ta-btn ta-secondary" style="font-size:0.72rem; padding:4px 10px;">Editar</a>
+                                        <a href="{{ url_for('main.delete_task', task_id=task.id) }}" class="ta-btn ta-danger" style="font-size:0.72rem; padding:4px 10px;">Excluir</a>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+
             </div>
-        {% endif %}
+        </div>
 
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
 <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 
 {% endblock %}

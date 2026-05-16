@@ -278,6 +278,27 @@ def edit_task(task_id):
         task=task
     )
 
+@main.route("/task/<int:task_id>/update-status", methods=["POST"])
+@login_required
+def update_task_status(task_id):
+    task = Task.query.get_or_404(task_id)
+ 
+    if task.owner != current_user:
+        return {"error": "Acesso não autorizado."}, 403
+ 
+    data = request.get_json()
+    new_status = data.get("status")
+ 
+    valid_statuses = ["pendente", "em_progresso", "concluída"]
+ 
+    if new_status not in valid_statuses:
+        return {"error": "Status inválido."}, 400
+ 
+    task.status = new_status
+    db.session.commit()
+ 
+    return {"success": True, "status": new_status}, 200
+
 @main.route("/logout")
 @login_required
 def logout():
