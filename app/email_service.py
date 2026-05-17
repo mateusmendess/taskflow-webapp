@@ -153,9 +153,9 @@ def send_daily_digest(app):
 
         for user in users:
             if not user.email_notifications:
-                continue
+            continue
 
-            tasks = Task.query.filter_by(user_id=user.id).all()
+        tasks = Task.query.filter_by(user_id=user.id).all()
 
             today_tasks    = [t for t in tasks if t.due_date == today    and t.status != "concluída"]
             tomorrow_tasks = [t for t in tasks if t.due_date == tomorrow and t.status != "concluída"]
