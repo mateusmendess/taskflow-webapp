@@ -425,13 +425,18 @@ def perfil_update():
 @main.route("/test-email")
 @login_required
 def test_email():
-    from .email_service import send_daily_digest
-    from flask import current_app
+    from flask_mail import Message
+    from .extensions import mail
     try:
-        send_daily_digest(current_app._get_current_object())
+        msg = Message(
+            subject="📋 TaskFlow — Teste de email",
+            recipients=[current_user.email],
+            html="<h1>Teste de email do TaskFlow!</h1><p>Se você recebeu este email, as notificações estão funcionando.</p>"
+        )
+        mail.send(msg)
         flash("Email de teste enviado!", "success")
     except Exception as e:
-        flash(f"Erro ao enviar email: {str(e)}", "error")
+        flash(f"Erro: {str(e)}", "error")
     return redirect(url_for("main.dashboard"))
 
 @main.route("/logout")
