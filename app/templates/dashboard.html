@@ -143,6 +143,21 @@
 
             {% if tasks %}
                 <p id="empty-filter-message">Nenhuma tarefa disponível.</p>
+
+                <!-- Legenda de cores -->
+                <div class="color-legend" id="color-legend">
+                    <button class="color-legend-toggle" onclick="toggleLegend()">
+                        ℹ️ Legenda de cores <span id="legend-arrow">▾</span>
+                    </button>
+                    <div class="color-legend-items" id="legend-items" style="display:none;">
+                        <span class="legend-item"><span class="legend-dot overdue-dot"></span> Atrasada</span>
+                        <span class="legend-item"><span class="legend-dot warning-dot"></span> Vence hoje</span>
+                        <span class="legend-item"><span class="legend-dot progress-dot"></span> Em progresso</span>
+                        <span class="legend-item"><span class="legend-dot done-dot"></span> Concluída</span>
+                        <span class="legend-item"><span class="legend-dot default-dot"></span> Pendente</span>
+                    </div>
+                </div>
+
                 <div class="db-tasks-bg">
                     <div class="db-tasks-grid">
                         {% for task in tasks %}
@@ -538,6 +553,15 @@
         const card = btn.closest('.kanban-card');
         const isExpanded = card.classList.toggle('expanded');
         btn.textContent = isExpanded ? '▴ Ocultar descrição' : '▾ Ver descrição';
+    }
+
+    // Legenda de cores
+    function toggleLegend() {
+        const items = document.getElementById('legend-items');
+        const arrow = document.getElementById('legend-arrow');
+        const isOpen = items.style.display !== 'none';
+        items.style.display = isOpen ? 'none' : 'flex';
+        arrow.textContent = isOpen ? '▾' : '▴';
     }
 </script>
 

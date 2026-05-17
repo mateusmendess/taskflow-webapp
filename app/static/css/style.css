@@ -1839,3 +1839,58 @@ input[type="date"].tf-input:not(:valid) {
 .task-card .task-badges {
     margin-top: 8px;
 }
+
+/* ── Legenda de cores ──────────────────────────────────────── */
+.color-legend {
+    margin-bottom: 12px;
+}
+
+.color-legend-toggle {
+    background: none;
+    border: none;
+    font-family: inherit;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--tf-muted);
+    cursor: pointer;
+    padding: 4px 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: color 0.15s;
+}
+
+.color-legend-toggle:hover { color: var(--tf-text); }
+
+.color-legend-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 8px;
+    padding: 10px 14px;
+    background: var(--tf-surface-2);
+    border: 1.5px solid var(--tf-border);
+    border-radius: 10px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--tf-text-2);
+}
+
+.legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+    flex-shrink: 0;
+}
+
+.overdue-dot  { background: #fca5a5; border: 1.5px solid #ef4444; }
+.warning-dot  { background: #fde68a; border: 1.5px solid #f59e0b; }
+.progress-dot { background: #bfdbfe; border: 1.5px solid #3b82f6; }
+.done-dot     { background: #86efac; border: 1.5px solid #22c55e; }
+.default-dot  { background: var(--tf-border); border: 1.5px solid var(--tf-border-2); }
