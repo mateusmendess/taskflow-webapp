@@ -357,18 +357,6 @@ def perfil_update():
 
     return jsonify({"error": "Ação inválida."}), 400
 
-@main.route("/test-email")
-@login_required
-def test_email():
-    try:
-        from .email_service import send_daily_digest
-        from flask import current_app
-        send_daily_digest(current_app._get_current_object())
-        flash("Email de teste enviado!", "success")
-    except Exception as e:
-        flash(f"Erro: {str(e)}", "error")
-    return redirect(url_for("main.dashboard"))
-
 @main.route("/logout")
 @login_required
 def logout():
