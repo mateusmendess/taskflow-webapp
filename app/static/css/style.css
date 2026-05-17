@@ -74,8 +74,8 @@ body.dark {
     --tf-done-border:     #166534;
     --tf-over-bg:         #1a0a0a;
     --tf-over-border:     #7f1d1d;
-    --tf-warn-bg:         #1a1200;
-    --tf-warn-border:     #78350f;
+    --tf-warn-bg:         #2d2000;
+    --tf-warn-border:     #d97706;
 
     --tf-badge-done-bg:   #052e16; --tf-badge-done-text:   #4ade80;
     --tf-badge-pend-bg:   #1e293b; --tf-badge-pend-text:   #94a3b8;
