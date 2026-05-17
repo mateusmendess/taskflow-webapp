@@ -17,9 +17,37 @@
 
 ---
 
+## 🎬 Demonstração
+
+![Demo TaskFlow](docs/Animação.gif)
+
+---
+
 ## 📸 Screenshots
 
-> *Em breve: screenshots e GIF do dashboard*
+### Página inicial
+![Página inicial](docs/dashboard.png)
+
+### Dashboard — Vista Lista
+![Dashboard Lista](docs/dashboard-lista.png)
+
+### Dashboard — Vista Quadro
+![Dashboard Quadro](docs/quadro-dashboard.png)
+
+### Quadro de Tarefas (navbar)
+![Quadro Navbar](docs/quadro-navbar.png)
+
+### Analytics
+![Analytics](docs/analytics.png)
+![Analytics 2](docs/analytics2.png)
+
+### Perfil
+![Perfil](docs/perfil.png)
+![Perfil 2](docs/perfil2.png)
+
+### Dark Mode
+![Dark Mode](docs/darkmode.png)
+![Dark Mode 2](docs/darkmode2.png)
 
 ---
 
@@ -40,7 +68,12 @@
 
 ### Dashboard — Vista Lista
 - Cards de estatísticas: Total, Pendentes, Concluídas e Atrasadas
-- Indicadores visuais por cor: atrasadas (vermelho), vencendo hoje (amarelo), concluídas (verde), em progresso (azul)
+- Indicadores visuais por cor com hierarquia de prioridade:
+  - 🔴 Atrasada (sempre prevalece)
+  - 🟡 Vence hoje
+  - 🔵 Em progresso
+  - 🟢 Concluída
+- Legenda de cores colapsável
 - Filtros dinâmicos por status, prioridade e vencimento (sem reload)
 - Pesquisa em tempo real por título e descrição
 - Ordenação por: mais importantes, vencimento, prioridade, mais recentes e mais antigas
@@ -49,9 +82,9 @@
 - Toggle Lista / Quadro
 - 3 colunas: Pendente, Em progresso, Concluída
 - Drag and drop no desktop (SortableJS)
-- Botão Mover no mobile
+- Botão Mover ›  no mobile com menu de opções
 - Busca em tempo real
-- Dica de arrastar ao hover (desktop) ou popup automático (mobile)
+- Dica ao hover no desktop
 
 ### Página Quadro (navbar)
 - Board kanban isolado acessível pela navbar
@@ -67,7 +100,7 @@
 
 ### Perfil
 - Editar nome sem recarregar
-- Avatar emoji (🐱 🐶 🦊 🐼 🐸)
+- Avatar emoji (🐱 🐶 🦊 🐼 🐸) com picker inline
 - Alterar senha
 - Toggle de notificações por email
 
@@ -86,6 +119,7 @@
 - Toasts para feedback das ações
 - Popup de boas-vindas após login
 - Favicon personalizado
+- Fuso horário correto (America/Sao_Paulo)
 
 ---
 
@@ -130,6 +164,18 @@ taskflow-webapp/
 │       ├── login.html
 │       ├── register.html
 │       └── edit_task.html
+├── docs/
+│   ├── Animação.gif
+│   ├── dashboard.png
+│   ├── dashboard-lista.png
+│   ├── quadro-dashboard.png
+│   ├── quadro-navbar.png
+│   ├── analytics.png
+│   ├── analytics2.png
+│   ├── perfil.png
+│   ├── perfil2.png
+│   ├── darkmode.png
+│   └── darkmode2.png
 ├── config.py
 ├── run.py
 ├── requirements.txt
