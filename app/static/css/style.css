@@ -1821,3 +1821,16 @@ input[type="date"].tf-input:not(:valid) {
 .toggle-switch input:checked + .toggle-slider:before {
     transform: translateX(22px);
 }
+
+/* ── Cards sem descrição centralizados ─────────────────────── */
+.task-card:not(:has(p:not(:empty))) {
+    justify-content: center;
+}
+
+.task-card h3 {
+    margin-bottom: 8px;
+}
+
+.task-card > p:empty {
+    display: none;
+}

@@ -148,9 +148,9 @@
                         {% for task in tasks %}
                             <div class="task-card
                                 {% if task.status == 'concluída' %}completed-card
-                                {% elif task.status == 'em_progresso' %}progress-card
                                 {% elif task.due_date and task.due_date < today %}overdue-card
                                 {% elif task.due_date and task.due_date|string == today|string %}warning-card
+                                {% elif task.status == 'em_progresso' %}progress-card
                                 {% endif %}"
                                 data-id="{{ task.id }}"
                                 data-status="{{ task.status }}"
