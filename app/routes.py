@@ -426,20 +426,10 @@ def perfil_update():
 @login_required
 def test_email():
     try:
-        import os
-        from sendgrid import SendGridAPIClient
-        from sendgrid.helpers.mail import Mail
-
-        message = Mail(
-            from_email="taskflow.notificacoes@gmail.com",
-            to_emails=current_user.email,
-            subject="Teste TaskFlow",
-            html_content="<h1>Teste de email do TaskFlow!</h1><p>Se você recebeu este email, as notificações estão funcionando.</p>"
-        )
-
-        sg = SendGridAPIClient(os.environ.get("SENDGRID_API_KEY"))
-        sg.send(message)
-        flash("Email enviado!", "success")
+        from .email_service import send_daily_digest
+        from flask import current_app
+        send_daily_digest(current_app._get_current_object())
+        flash("Email de teste enviado!", "success")
     except Exception as e:
         flash(f"Erro: {str(e)}", "error")
     return redirect(url_for("main.dashboard"))
