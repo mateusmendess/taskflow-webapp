@@ -15,4 +15,7 @@ def create_app():
     from .routes import main
     app.register_blueprint(main)
 
+    from .scheduler import init_scheduler
+    init_scheduler(app)
+
     return app
