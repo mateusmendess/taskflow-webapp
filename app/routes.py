@@ -422,23 +422,6 @@ def perfil_update():
 
     return jsonify({"error": "Ação inválida."}), 400
 
-@main.route("/test-email")
-@login_required
-def test_email():
-    from flask_mail import Message
-    from .extensions import mail
-    try:
-        msg = Message(
-            subject="📋 TaskFlow — Teste de email",
-            recipients=[current_user.email],
-            html="<h1>Teste de email do TaskFlow!</h1><p>Se você recebeu este email, as notificações estão funcionando.</p>"
-        )
-        mail.send(msg)
-        flash("Email de teste enviado!", "success")
-    except Exception as e:
-        flash(f"Erro: {str(e)}", "error")
-    return redirect(url_for("main.dashboard"))
-
 @main.route("/logout")
 @login_required
 def logout():
