@@ -1,7 +1,6 @@
-# Inicialização da aplicação Flask
 from flask import Flask
 from config import Config
-from .extensions import db, bcrypt, login_manager
+from .extensions import db, bcrypt, login_manager, mail
 
 def create_app():
     app = Flask(__name__)
@@ -11,6 +10,7 @@ def create_app():
     db.init_app(app)
     bcrypt.init_app(app)
     login_manager.init_app(app)
+    mail.init_app(app)
 
     from .routes import main
     app.register_blueprint(main)
