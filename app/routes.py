@@ -10,9 +10,13 @@ from flask_login import (
 
 from .models import User, Task
 from .extensions import db, bcrypt
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
+import pytz
 
 main = Blueprint("main", __name__)
+
+def hoje():
+    return datetime.now(pytz.timezone("America/Sao_Paulo")).date()
 
 
 @main.route("/")
@@ -90,21 +94,13 @@ def dashboard():
     if request.method == "POST":
 
         title = request.form.get("title")
-
         description = request.form.get("description")
-
         priority = request.form.get("priority")
-
         due_date = request.form.get("due_date")
-
         due_date_obj = None
 
         if due_date:
-
-            due_date_obj = datetime.strptime(
-                due_date,
-                "%Y-%m-%d"
-            ).date()
+            due_date_obj = datetime.strptime(due_date, "%Y-%m-%d").date()
 
         new_task = Task(
             title=title,
@@ -115,88 +111,42 @@ def dashboard():
         )
 
         db.session.add(new_task)
-
         db.session.commit()
+        flash("Tarefa criada com sucesso!", "success")
+        return redirect(url_for("main.dashboard"))
 
-        flash(
-            "Tarefa criada com sucesso!",
-            "success"
-        )
-
-        return redirect(
-            url_for("main.dashboard")
-        )
-
-    tasks_query = Task.query.filter_by(
-        user_id=current_user.id
-    )
-
+    tasks_query = Task.query.filter_by(user_id=current_user.id)
     tasks = tasks_query.all()
 
-    priority_order = {
-        "alta": 1,
-        "media": 2,
-        "baixa": 3
-    }
+    priority_order = {"alta": 1, "media": 2, "baixa": 3}
 
     tasks = sorted(
         tasks,
         key=lambda task: (
-
             task.status == "concluída",
-
-            priority_order.get(
-                task.priority,
-                4
-            ),
-
+            priority_order.get(task.priority, 4),
             task.due_date is None,
-
             task.due_date
         )
     )
 
-    today = date.today()
+    today = hoje()
 
-    total_tasks = len(tasks)
-
-    completed_tasks = len([
-        task for task in tasks
-        if task.status == "concluída"
-    ])
-
-    pending_tasks = len([
-        task for task in tasks
-        if task.status == "pendente"
-    ])
-
-    overdue_tasks = len([
-
-        task for task in tasks
-
-        if (
-            task.due_date
-            and task.due_date < today
-            and task.status != "concluída"
-        )
-
-    ])
+    total_tasks     = len(tasks)
+    completed_tasks = len([t for t in tasks if t.status == "concluída"])
+    pending_tasks   = len([t for t in tasks if t.status == "pendente"])
+    overdue_tasks   = len([t for t in tasks if t.due_date and t.due_date < today and t.status != "concluída"])
 
     return render_template(
         "dashboard.html",
-
         tasks=tasks,
-
         today=today,
-
         total_tasks=total_tasks,
-
         completed_tasks=completed_tasks,
-
         pending_tasks=pending_tasks,
-
         overdue_tasks=overdue_tasks
     )
+
 
 @main.route("/task/<int:task_id>/complete")
 @login_required
@@ -209,11 +159,8 @@ def complete_task(task_id):
         return redirect(url_for("main.dashboard"))
 
     task.status = "concluída"
-
     db.session.commit()
-
     flash("Tarefa concluída!", "success")
-
     return redirect(url_for("main.dashboard"))
 
 
@@ -228,11 +175,8 @@ def delete_task(task_id):
         return redirect(url_for("main.dashboard"))
 
     db.session.delete(task)
-
     db.session.commit()
-
     flash("Tarefa excluída!", "success")
-
     return redirect(url_for("main.dashboard"))
 
 
@@ -248,64 +192,53 @@ def edit_task(task_id):
 
     if request.method == "POST":
 
-        task.title = request.form.get("title")
-
+        task.title       = request.form.get("title")
         task.description = request.form.get("description")
-
-        task.priority = request.form.get("priority")
-
-        task.status = request.form.get("status")
+        task.priority    = request.form.get("priority")
+        task.status      = request.form.get("status")
 
         due_date_str = request.form.get("due_date")
 
         if due_date_str:
-            task.due_date = datetime.strptime(
-                due_date_str,
-                "%Y-%m-%d"
-            ).date()
-
+            task.due_date = datetime.strptime(due_date_str, "%Y-%m-%d").date()
         else:
             task.due_date = None
 
         db.session.commit()
-
         flash("Tarefa atualizada com sucesso!", "success")
-
         return redirect(url_for("main.dashboard"))
 
-    return render_template(
-        "edit_task.html",
-        task=task
-    )
+    return render_template("edit_task.html", task=task)
+
 
 @main.route("/task/<int:task_id>/update-status", methods=["POST"])
 @login_required
 def update_task_status(task_id):
     task = Task.query.get_or_404(task_id)
- 
+
     if task.owner != current_user:
         return {"error": "Acesso não autorizado."}, 403
- 
+
     data = request.get_json()
     new_status = data.get("status")
- 
+
     valid_statuses = ["pendente", "em_progresso", "concluída"]
- 
+
     if new_status not in valid_statuses:
         return {"error": "Status inválido."}, 400
- 
+
     task.status = new_status
     db.session.commit()
- 
     return {"success": True, "status": new_status}, 200
+
 
 @main.route("/quadro")
 @login_required
 def quadro():
     tasks = Task.query.filter_by(user_id=current_user.id).all()
-    return render_template("quadro.html", tasks=tasks)
+    today = hoje()
+    return render_template("quadro.html", tasks=tasks, today=today)
 
-# Substitui a rota /perfil existente no routes.py
 
 @main.route("/perfil", methods=["GET", "POST"])
 @login_required
@@ -324,6 +257,8 @@ def perfil():
             current_user.email_notifications = request.form.get("email_notifications") == "on"
             db.session.commit()
             flash("Preferências de notificação atualizadas!", "success")
+
+        elif action == "update_name":
             name = request.form.get("name")
             if name:
                 current_user.name = name
@@ -331,9 +266,9 @@ def perfil():
                 flash("Nome atualizado com sucesso!", "success")
 
         elif action == "update_password":
-            current_password = request.form.get("current_password")
-            new_password = request.form.get("new_password")
-            confirm_password = request.form.get("confirm_password")
+            current_password  = request.form.get("current_password")
+            new_password      = request.form.get("new_password")
+            confirm_password  = request.form.get("confirm_password")
 
             if not bcrypt.check_password_hash(current_user.password, current_password):
                 flash("Senha atual incorreta.", "error")
@@ -350,23 +285,22 @@ def perfil():
 
     return render_template("perfil.html")
 
+
 @main.route("/analytics")
 @login_required
 def analytics():
-    from datetime import date, timedelta
-
     tasks = Task.query.filter_by(user_id=current_user.id).all()
-    today = date.today()
+    today = hoje()
 
-    total_tasks     = len(tasks)
-    completed_tasks = len([t for t in tasks if t.status == "concluída"])
-    pending_tasks   = len([t for t in tasks if t.status == "pendente"])
-    progress_tasks  = len([t for t in tasks if t.status == "em_progresso"])
-    overdue_tasks   = len([t for t in tasks if t.due_date and t.due_date < today and t.status != "concluída"])
-    high_tasks      = len([t for t in tasks if t.priority == "alta"])
-    medium_tasks    = len([t for t in tasks if t.priority == "media"])
-    low_tasks       = len([t for t in tasks if t.priority == "baixa"])
-    completion_rate = round((completed_tasks / total_tasks * 100) if total_tasks > 0 else 0)
+    total_tasks       = len(tasks)
+    completed_tasks   = len([t for t in tasks if t.status == "concluída"])
+    pending_tasks     = len([t for t in tasks if t.status == "pendente"])
+    progress_tasks    = len([t for t in tasks if t.status == "em_progresso"])
+    overdue_tasks     = len([t for t in tasks if t.due_date and t.due_date < today and t.status != "concluída"])
+    high_tasks        = len([t for t in tasks if t.priority == "alta"])
+    medium_tasks      = len([t for t in tasks if t.priority == "media"])
+    low_tasks         = len([t for t in tasks if t.priority == "baixa"])
+    completion_rate   = round((completed_tasks / total_tasks * 100) if total_tasks > 0 else 0)
     created_this_week = len([t for t in tasks if t.created_at.date() >= today - timedelta(days=7)])
 
     week_labels = []
@@ -391,6 +325,7 @@ def analytics():
         week_labels=week_labels,
         week_data=week_data
     )
+
 
 @main.route("/perfil/update", methods=["POST"])
 @login_required
@@ -422,12 +357,10 @@ def perfil_update():
 
     return jsonify({"error": "Ação inválida."}), 400
 
+
 @main.route("/logout")
 @login_required
 def logout():
-
     logout_user()
-
     flash("Logout realizado com sucesso!", "success")
-
     return redirect(url_for("main.login"))

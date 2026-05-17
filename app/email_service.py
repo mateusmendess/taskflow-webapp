@@ -1,5 +1,6 @@
 import os
-from datetime import date, timedelta
+import pytz
+from datetime import datetime, timedelta
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 from flask import render_template_string
@@ -100,7 +101,8 @@ EMAIL_TEMPLATE = """
 
 def send_daily_digest(app):
     with app.app_context():
-        today    = date.today()
+        tz       = pytz.timezone("America/Sao_Paulo")
+        today    = datetime.now(tz).date()
         tomorrow = today + timedelta(days=1)
 
         users = User.query.all()
