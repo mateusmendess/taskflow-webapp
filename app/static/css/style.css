@@ -1834,3 +1834,8 @@ input[type="date"].tf-input:not(:valid) {
 .task-card > p:empty {
     display: none;
 }
+
+/* ── Espaçamento badges quando sem descrição ───────────────── */
+.task-card .task-badges {
+    margin-top: 8px;
+}
